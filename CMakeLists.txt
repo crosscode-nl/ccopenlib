@@ -3,10 +3,12 @@ project (CCOPENLIB)
 
 SET(HEADERS	
 	include/threadpool.h
+	include/timer.h
 ) 
 
 SET(SOURCES	
 	src/threadpool.cpp
+	src/timer.cpp
 )
 
 add_library(ccopenlib ${HEADERS} ${SOURCES})
@@ -17,5 +19,5 @@ set_property(TARGET ccopenlib PROPERTY PUBLIC_HEADER ${HEADERS})
 
 install(TARGETS ccopenlib 	
     LIBRARY DESTINATION lib
-	PUBLIC_HEADER DESTINATION include
+	PUBLIC_HEADER DESTINATION include/ccopenlib
     ARCHIVE DESTINATION lib/static)

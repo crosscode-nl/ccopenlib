@@ -1,19 +1,37 @@
-/**
-		© 2017 CrossCode / Patrick Vollebregt - All rights reserved
+/*
+SPDX-License-Identifier: MIT
 
-		SPDX-License-Identifier: CC-BY-SA-4.0
+© 2017 CrossCode / Patrick Vollebregt - All rights reserved
 
-		This work is licensed under the Creative Commons Attribution-ShareAlike 4.0 International License.
-		To view a copy of this license, visit http://creativecommons.org/licenses/by-sa/4.0/ or send a letter to Creative Commons, PO Box 1866, Mountain View, CA 94042, USA
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
-		If you use this code, please mention the name CrossCode in your product.
-		If for some reason this not possible, please contact: ccopenlib@crosscode.nl to obtain a license.
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
-		If you'd like to modify and/or share this code, please share it under the same license, and keep the copyright notice intact.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
-		If you found any errors or improvements you'd like to share? Please contact me: ccopenlib@crosscode.nl
+If you use this code, please mention usages of this library and the copyright notice visible
+in your end product or distributed documentation. For example:
 
-		Visit http://www.ccopenlib.com for more information.
+This product uses "ccopenlib" written and copyrighted by CrossCode / Patrick Vollebregt.
+Visit http://www.ccopenlib.com for more information.
+
+If for some reason this not possible, please contact: ccopenlib@crosscode.nl to purchase a license exception.
+
+If you'd like to modify and/or share this code, share it under the same license, and keep the original copyright notice intact.
+
+If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
 #include <threadpool.h>
 #include <vector>
@@ -21,7 +39,6 @@
 #include <mutex>
 #include <atomic>
 #include <queue>
-#include <iostream>
 
 namespace ccol
 {	
@@ -107,19 +124,13 @@ namespace ccol
 		}
 
 		void ThreadPool::Impl::threadSpinner()
-		{
-			try {
-				while (_running) {
-					std::function<void()> callback(threadRetrieveCallback());
-					if (_running && callback != nullptr) {
-						callback();
-					}
+		{			
+			while (_running) {
+				std::function<void()> callback(threadRetrieveCallback());
+				if (_running && callback != nullptr) {
+					callback();
 				}
-			}
-			catch (std::exception &e) {
-				std::cout << e.what();
-				throw;
-			}
+			}			
 		}
 
 		void ThreadPool::Impl::lockedEnqueueJob(const std::vector<std::function<void()>> &methods)
