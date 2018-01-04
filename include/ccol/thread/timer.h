@@ -53,9 +53,9 @@ namespace ccol
 			std::unique_ptr<Impl> _impl;
 		public:
 			Timer();
-			void start(const std::chrono::milliseconds& delay, const std::chrono::milliseconds& interval);
-			void start(const std::chrono::milliseconds& interval);
-			void startSingleshot(const std::chrono::milliseconds& delay);
+			void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
+			void start(const std::chrono::nanoseconds& interval);
+			void startSingleshot(const std::chrono::nanoseconds& delay);
 			void setCallback(const std::function<void()> &callback);
 			void setCallback(std::function<void()> &&callback);
 			void stop();
