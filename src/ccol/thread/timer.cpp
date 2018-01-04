@@ -48,8 +48,7 @@ namespace ccol
 		{
 		private:
 			std::mutex _stateLock;
-			std::condition_variable _stateChanged;
-			std::chrono::nanoseconds _delay;
+			std::condition_variable _stateChanged;			
 			std::chrono::nanoseconds _interval;
 			std::chrono::time_point<std::chrono::steady_clock> _nextInterval;
 			bool _running = false;
@@ -99,8 +98,7 @@ namespace ccol
 		void Timer::Impl::start(const std::chrono::nanoseconds & delay, const std::chrono::nanoseconds& interval)
 		{
 			{
-				std::unique_lock<std::mutex> lock{ _stateLock };
-				_delay = delay;
+				std::unique_lock<std::mutex> lock{ _stateLock };				
 				_interval = interval;
 				_nextInterval = std::chrono::steady_clock::now() + delay;
 				if (!_running) {
