@@ -2,13 +2,13 @@ cmake_minimum_required (VERSION 3.9.0)
 project (CCOPENLIB)
 
 SET(HEADERS	
-	include/threadpool.h
-	include/timer.h
+	include/ccol/thread/threadpool.h
+	include/ccol/thread/timer.h
 ) 
 
 SET(SOURCES	
-	src/threadpool.cpp
-	src/timer.cpp
+	src/ccol/thread/threadpool.cpp
+	src/ccol/thread/timer.cpp
 )
 
 add_library(ccopenlib ${HEADERS} ${SOURCES})

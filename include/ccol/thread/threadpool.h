@@ -43,26 +43,29 @@
 
 namespace ccol
 {
-	class ThreadPool
-	{
-	private:
-		class Impl;
-		std::unique_ptr<Impl> _impl;
-	public:
-		ThreadPool();
-		ThreadPool(const unsigned int &threads);
-		void enqueueJob(const std::function<void()> &method);
-		void enqueueJob(const std::vector<std::function<void()>> &methods);
-		void enqueueJob(std::queue<std::function<void()>> methods); // copy because we need to pop...
-		void enqueueJob(std::function<void()> &&method);
-		void enqueueJob(std::vector<std::function<void()>> &&methods);
-		void enqueueJob(std::queue<std::function<void()>> &&methods);
-		size_t jobsInQueueCount();
-		unsigned int threadCount();
-		void clearQueue();
-		std::queue<std::function<void()>> pullJobsFromQueue();
-		virtual ~ThreadPool();
-	};
+	namespace thread {
+
+		class ThreadPool
+		{
+		private:
+			class Impl;
+			std::unique_ptr<Impl> _impl;
+		public:
+			ThreadPool();
+			ThreadPool(const unsigned int &threads);
+			void enqueueJob(const std::function<void()> &method);
+			void enqueueJob(const std::vector<std::function<void()>> &methods);
+			void enqueueJob(std::queue<std::function<void()>> methods); // copy because we need to pop...
+			void enqueueJob(std::function<void()> &&method);
+			void enqueueJob(std::vector<std::function<void()>> &&methods);
+			void enqueueJob(std::queue<std::function<void()>> &&methods);
+			size_t jobsInQueueCount();
+			unsigned int threadCount();
+			void clearQueue();
+			std::queue<std::function<void()>> pullJobsFromQueue();
+			virtual ~ThreadPool();
+		};
+	}
 }
 
 #endif // CCOPENLIB_THREADPOOL_H

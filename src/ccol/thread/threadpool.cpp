@@ -33,7 +33,7 @@ If you'd like to modify and/or share this code, share it under the same license,
 
 If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#include <threadpool.h>
+#include <ccol/thread/threadpool.h>
 #include <vector>
 #include <thread>
 #include <mutex>
@@ -41,7 +41,9 @@ If you have found any errors or improvements you'd like to share, please contact
 #include <queue>
 
 namespace ccol
-{	
+{
+	namespace thread {
+		
 		class ThreadPool::Impl
 		{
 		private:
@@ -53,7 +55,7 @@ namespace ccol
 			std::mutex _jobsMutex;
 			void threadSpinner();
 			inline std::function<void()> threadRetrieveCallback();
-			inline void lockedEnqueueJob(const std::vector<std::function<void()>> &methods);			
+			inline void lockedEnqueueJob(const std::vector<std::function<void()>> &methods);
 			inline void lockedEnqueueJob(const std::function<void()> &method);
 			inline void lockedEnqueueJob(std::vector<std::function<void()>> &&methods);
 			inline void lockedEnqueueJob(std::queue<std::function<void()>> &&methods);
@@ -61,7 +63,7 @@ namespace ccol
 		public:
 			Impl(const unsigned int &threads);
 			inline void enqueueJob(const std::function<void()> &method);
-			inline void enqueueJob(const std::vector<std::function<void()>> &methods);			
+			inline void enqueueJob(const std::vector<std::function<void()>> &methods);
 			inline void enqueueJob(std::function<void()> &&method);
 			inline void enqueueJob(std::vector<std::function<void()>> &&methods);
 			inline void enqueueJob(std::queue<std::function<void()>> &&methods);
@@ -79,7 +81,7 @@ namespace ccol
 
 		inline std::queue<std::function<void()>> ThreadPool::Impl::pullJobsFromQueue()
 		{
-			std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex);
+			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			std::queue<std::function<void()>> result = std::move(_jobs);
 			_jobs = std::queue<std::function<void()>>(); // create new empty queue/
 			return std::move(result);
@@ -92,7 +94,7 @@ namespace ccol
 
 		size_t ThreadPool::Impl::jobsInQueueCount()
 		{
-			std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex);
+			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			return _jobs.size();
 		}
 
@@ -115,7 +117,7 @@ namespace ccol
 		std::function<void()> ThreadPool::Impl::threadRetrieveCallback()
 		{
 			std::function<void()> callback = nullptr;
-			std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex);
+			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			_threadUnlocked.wait(jobsMutexLock, [this]() { return !_jobs.empty() || !_running; });
 			if (!_running) return nullptr;
 			callback = std::move(_jobs.front());
@@ -124,33 +126,33 @@ namespace ccol
 		}
 
 		void ThreadPool::Impl::threadSpinner()
-		{			
+		{
 			while (_running) {
 				std::function<void()> callback(threadRetrieveCallback());
 				if (_running && callback != nullptr) {
 					callback();
 				}
-			}			
+			}
 		}
 
 		void ThreadPool::Impl::lockedEnqueueJob(const std::vector<std::function<void()>> &methods)
 		{
-			std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex);
+			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			for (const auto &method : methods) {
 				_jobs.push(method);
 			}
 		}
-	
+
 
 		void ThreadPool::Impl::lockedEnqueueJob(const std::function<void()> &method)
 		{
-			std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex);
+			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			_jobs.push(method);
 		}
 
 		void ThreadPool::Impl::lockedEnqueueJob(std::vector<std::function<void()>> &&methods)
 		{
-			std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex);
+			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			for (const auto &method : methods) {
 				_jobs.push(std::move(method));
 			}
@@ -158,7 +160,7 @@ namespace ccol
 
 		void ThreadPool::Impl::lockedEnqueueJob(std::queue<std::function<void()>> &&methods)
 		{
-			std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex);
+			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			while (!methods.empty()) {
 				_jobs.push(std::move(methods.front()));
 				methods.pop();
@@ -167,7 +169,7 @@ namespace ccol
 
 		void ThreadPool::Impl::lockedEnqueueJob(std::function<void()> &&method)
 		{
-			std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex);
+			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			_jobs.push(std::move(method));
 		}
 
@@ -206,7 +208,7 @@ namespace ccol
 		{
 			_running = false;
 			{ // scope to release the lock.
-				std::unique_lock<std::mutex> jobsMutexLock(_jobsMutex); // acquire lock, otherwise not all threads are waiting... 
+				std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex }; // acquire lock, otherwise not all threads are waiting... 
 				_threadUnlocked.notify_all();
 			}
 
@@ -280,5 +282,6 @@ namespace ccol
 		ThreadPool::~ThreadPool()
 		{
 
-		}	
+		}
+	}
 }
