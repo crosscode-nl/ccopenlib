@@ -69,7 +69,7 @@ namespace ccol
             inline void enqueueJob(std::vector<std::function<void()>> &&methods);
             inline void enqueueJob(std::queue<std::function<void()>> &&methods);
             inline size_t jobsInQueueCount();
-            inline unsigned int threadCount();
+            inline unsigned int threadCount() const;
             inline void clearQueue();
             inline std::queue<std::function<void()>> pullJobsFromQueue();
             ~Impl();
@@ -89,7 +89,7 @@ namespace ccol
             return result;
         }
 
-        unsigned int ThreadPool::Impl::threadCount()
+        unsigned int ThreadPool::Impl::threadCount() const
         {
             return _threadCount;
         }
@@ -266,7 +266,7 @@ namespace ccol
             return _impl->jobsInQueueCount();
         }
 
-        unsigned int ThreadPool::threadCount()
+        unsigned int ThreadPool::threadCount() const
         {
             return _impl->threadCount();
         }
@@ -278,7 +278,14 @@ namespace ccol
 
         std::queue<std::function<void()>> ThreadPool::pullJobsFromQueue()
         {
-            return _impl->pullJobsFromQueue();
+                                          return _impl->pullJobsFromQueue();
+}
+
+        std::function<void ()> ThreadPool::createWrapper(const std::function<void ()> &method)
+        {
+            return [this,method]() {
+                enqueueJob(method);
+            };
         }
 
         ThreadPool::~ThreadPool()

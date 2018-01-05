@@ -45,14 +45,15 @@ namespace ccol
 {
     namespace thread {
 
-        /// \brief The ThreadPool class provides threadpool functionality.
-        ///
-        /// It uses a pool of std::thread instances internally.
-        ///
-        /// It is written for performance, so be aware that exception handling is not supported.
-        ///
-        /// Throwing an uncaught exception from a job will get std::terminate to get called
-        /// following the defined behavior of std::thread.
+        /** \brief The ThreadPool provides thread pooling functionality.
+         *
+         *  It uses a pool of std::thread instances internally.
+         *
+         *  It is written for performance, so be aware that exception handling is not supported.
+         *
+         *  Throwing an uncaught exception from a job will get std::terminate() to get called
+         *  following the defined behavior of std::thread.
+         */
         class ThreadPool
         {
         private:
@@ -60,94 +61,118 @@ namespace ccol
             std::unique_ptr<Impl> _impl;
         public:
 
-            /// \brief Default constructor
-            ///
-            /// Creates an instance of the threadpool and automatically
-            /// allocates an optimal pool of threads. You can check the
-            /// amount of thread created by calling the method threadCount()
+            /** \brief Default constructor
+             *
+             *  Creates an instance of the threadpool and automatically
+             *  allocates an optimal pool of threads. You can check the
+             *  amount of thread created by calling the method threadCount()
+             */
             ThreadPool();
 
-            /// \brief Contructor to create an instance of ThreadPool with a certain amount of thread.
-            ///
-            /// Creates an instance of the threadpool with the specified amount of threads.
-            ///
-            /// Specifying 0 threads will create the optimal amount of threads, just as de default constructor.
-            ///
-            /// \param threads The amount of threads created on the thread pool.
+            /** \brief Contructor to create an instance of ThreadPool with a certain amount of thread.
+             *
+             *  Creates an instance of the threadpool with the specified amount of threads.
+             *
+             *  Specifying 0 threads will create the optimal amount of threads, just as de default constructor.
+             *
+             *  \param threads The amount of threads created on the thread pool.
+             */
             ThreadPool(const unsigned int &threads);
 
-            /// \brief Enqueue a job by copy.
-            ///
-            /// Enqueues a job on the threadpool by making a copy of the passed method.
-            ///
-            /// \param method The method to be executed.
+            /** \brief Enqueue a job by copy.
+             *
+             *  Enqueues a job on the threadpool by making a copy of the passed method.
+             *
+             *  \param method The method to be executed.
+             */
             void enqueueJob(const std::function<void()> &method);
 
-            /// \brief Enqueue multiple jobs by copy.
-            ///
-            /// Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the vector.
-            ///
-            /// \param methods A std::vector containing the methods to be executed.
+            /** \brief Enqueue multiple jobs by copy.
+             *
+             *  Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the vector.
+             *
+             *  \param methods A std::vector containing the methods to be executed.
+             */
             void enqueueJob(const std::vector<std::function<void()>> &methods);
 
-            /// \brief Enqueue multiple jobs from queue.
-            ///
-            /// Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the queue.
-            ///
-            /// The parameter is passed by copy, since the only way to get items out of a queue is to pop them.
-            ///
-            /// This would not be possible with a const reference, and with a reference this would result in
-            /// an emty queue.
-            ///
-            /// \param methods A std::queue containing the methods to be executed.
+            /** \brief Enqueue multiple jobs from queue.
+             *
+             *  Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the queue.
+             *
+             *  The parameter is passed by copy, since the only way to get items out of a queue is to pop them.
+             *
+             *  This would not be possible with a const reference, and with a reference this would result in
+             *  an emty queue.
+             *
+             *  \param methods A std::queue containing the methods to be executed.
+             */
             void enqueueJob(std::queue<std::function<void()>> methods); // copy because we need to pop...
 
-            /// \brief Enqueue a job by using move semantics.
-            ///
-            /// Enqueues a job on the threadpool by using move semantics the method to the queue.
-            ///
-            /// \param method The method to be executed.
+            /**  \brief Enqueue a job by using move semantics.
+             *
+             *  Enqueues a job on the threadpool by using move semantics the method to the queue.
+             *
+             *  \param method The method to be executed.
+             */
             void enqueueJob(std::function<void()> &&method);
 
-            /// \brief Enqueue multiple jobs by using move semantics.
-            ///
-            /// Enqueues multiple jobs on the threadpool by using move semantics the method to the queue.
-            ///
-            /// \param methods A std::vector containing the methods to be executed.
+            /** \brief Enqueue multiple jobs by using move semantics.
+             *
+             *  Enqueues multiple jobs on the threadpool by using move semantics the method to the queue.
+             *
+             *  \param methods A std::vector containing the methods to be executed.
+             */
             void enqueueJob(std::vector<std::function<void()>> &&methods);
 
-            /// \brief Enqueue multiple jobs by using move semantics.
-            ///
-            /// Enqueues multiple jobs on the threadpool by using move semantics the method to the queue.
-            ///
-            /// \param methods A std::queue containing the methods to be executed.
+            /** \brief Enqueue multiple jobs by using move semantics.
+             *
+             *  Enqueues multiple jobs on the threadpool by using move semantics the method to the queue.
+             *
+             *  \param methods A std::queue containing the methods to be executed.
+             */
             void enqueueJob(std::queue<std::function<void()>> &&methods);
 
-            /// Returns the amount of jobs in the queue.
-            ///
-            /// \return The amount of jobs in the queue.
+            /** Returns the amount of jobs in the queue.
+             *
+             *  \return The amount of jobs in the queue.
+             */
             size_t jobsInQueueCount();
 
-            /// \brief Returns the amount of threads in the pool.
-            ///
-            /// \return The amount of threads in the pool.
-            unsigned int threadCount();
+            /** \brief Returns the amount of threads in the pool.
+             *
+             *  \return The amount of threads in the pool.
+             */
+            unsigned int threadCount() const;
 
-            /// Removes all jobs from the queue.
+            /**  Removes all jobs from the queue. */
             void clearQueue();
 
-            /// \brief Removes all jobs from the queue, and returns them for re-adding them later.
-            ///
-            /// This can be used to 'pause' the processing of jobs on the threadpool.
-            /// \return A std::queue with the jobs that where pending for execution
+            /**  \brief Removes all jobs from the queue, and returns them for re-adding them later.
+             *
+             *  This can be used to 'pause' the processing of jobs on the threadpool.
+             *  \return A std::queue with the jobs that where pending for execution
+             */
             std::queue<std::function<void()>> pullJobsFromQueue();
 
-            /// \brief The destructor
-            ///
-            /// Destructing the threadpool will lead to the std::thread to be stopped and
-            /// joined. Any job that is still executing will block destruction until it is
-            /// completed. Therefor it is adviced if you add long running jobs, that you
-            /// add some cancelation mechanism.
+            /** \brief Wraps the provided lambda in another lambda that will execute on the ThreadPool.
+             *
+             * The lambda provided will be wrapped in the returned lambda that each time it will
+             * be called will add the provided lambda to the job queue of this ThreadPool.
+             *
+             * The returned lambda could be given to a timer as a callback to create reentrant callbacks.
+             *
+             * \param method A lambda to be wrapped in lambda that will execute on the ThreadPool.
+             * \return The lambda that will add the lambda to the job queue when executed.
+             */
+            std::function<void()> createWrapper(const std::function<void()> &method);
+
+            /** \brief The destructor
+             *
+             *  Destructing the threadpool will lead to the std::thread to be stopped and
+             *  joined. Any job that is still executing will block destruction until it is
+             *  completed. Therefore it is adviced if you add long running jobs, that you
+             *  add some cancelation mechanism.
+             */
             virtual ~ThreadPool();
         };
     }
