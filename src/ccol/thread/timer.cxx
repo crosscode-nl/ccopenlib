@@ -48,14 +48,14 @@ namespace ccol
 	{
 		class Timer::Impl
 		{
-		private:
+		private:            
 			std::mutex _stateLock;
 			std::condition_variable _stateChanged;			
 			std::chrono::nanoseconds _interval;
-			std::chrono::time_point<std::chrono::steady_clock> _nextInterval;
-			bool _running = false;
+			std::chrono::time_point<std::chrono::steady_clock> _nextInterval;			            
 			std::function<void()> _callBack;
-			std::thread _thread;
+            std::thread _thread;
+            bool _running = false;
 			void threadSpinner();
 		public:
 			Impl();
@@ -149,6 +149,18 @@ namespace ccol
 		{
 
 		}
+
+        Timer::Timer(const std::function<void()> &callback)
+            : _impl(std::make_unique<Impl>())
+        {
+            setCallback(callback);
+        }
+
+        Timer::Timer(std::function<void()> &&callback)
+            : _impl(std::make_unique<Impl>())
+        {
+            setCallback(std::move(callback));
+        }
 
 		void Timer::start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval)
 		{
