@@ -68,7 +68,6 @@ namespace ccol
 
         Timer::Impl::Impl()
         {
-
         }
 
         void Timer::Impl::threadSpinner()
@@ -145,7 +144,6 @@ namespace ccol
         Timer::Timer()
             : _impl(std::make_unique<Impl>())
         {
-
         }
 
         Timer::Timer(const std::function<void()> &callback)
@@ -192,7 +190,6 @@ namespace ccol
 
         Timer::~Timer()
         {
-
         }
     }
 }

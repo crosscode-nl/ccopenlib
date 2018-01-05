@@ -222,13 +222,11 @@ namespace ccol
         ThreadPool::ThreadPool()
             : _impl(std::make_unique<Impl>(0))
         {
-
         }
 
         ThreadPool::ThreadPool(const unsigned int &threads)
             : _impl(std::make_unique<Impl>(threads))
         {
-
         }
 
         void ThreadPool::enqueueJob(const std::function<void()> &method)
@@ -278,8 +276,8 @@ namespace ccol
 
         std::queue<std::function<void()>> ThreadPool::pullJobsFromQueue()
         {
-                                          return _impl->pullJobsFromQueue();
-}
+            return _impl->pullJobsFromQueue();
+        }
 
         std::function<void ()> ThreadPool::createWrapper(const std::function<void ()> &method)
         {
@@ -290,7 +288,6 @@ namespace ccol
 
         ThreadPool::~ThreadPool()
         {
-
         }
     }
 }
