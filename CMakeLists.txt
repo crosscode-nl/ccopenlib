@@ -6,7 +6,6 @@ project (
     LANGUAGES CXX
 )
 
-
 SET(HEADERS	
 	include/ccol/thread/threadpool.h
 	include/ccol/thread/timer.h
