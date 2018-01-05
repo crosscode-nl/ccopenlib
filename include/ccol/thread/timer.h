@@ -44,26 +44,26 @@ If you have found any errors or improvements you'd like to share, please contact
 
 namespace ccol
 {
-	namespace thread
-	{
-		class Timer
-		{
-		private:
-			class Impl;
-			std::unique_ptr<Impl> _impl;
-		public:
-			Timer();
+    namespace thread
+    {
+        class Timer
+        {
+        private:
+            class Impl;
+            std::unique_ptr<Impl> _impl;
+        public:
+            Timer();
             Timer(const std::function<void()> &callback);
             Timer(std::function<void()> &&callback);
-			void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
-			void start(const std::chrono::nanoseconds& interval);
-			void startSingleshot(const std::chrono::nanoseconds& delay);
-			void setCallback(const std::function<void()> &callback);
-			void setCallback(std::function<void()> &&callback);
-			void stop();
-			virtual ~Timer();
-		};
-	}
+            void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
+            void start(const std::chrono::nanoseconds& interval);
+            void startSingleshot(const std::chrono::nanoseconds& delay);
+            void setCallback(const std::function<void()> &callback);
+            void setCallback(std::function<void()> &&callback);
+            void stop();
+            virtual ~Timer();
+        };
+    }
 }
 
 #endif // CCOPENLIB_TIMER_H

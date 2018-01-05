@@ -44,111 +44,111 @@ If you have found any errors or improvements you'd like to share, please contact
 
 namespace ccol
 {
-	namespace thread
-	{
-		class Timer::Impl
-		{
-		private:            
-			std::mutex _stateLock;
-			std::condition_variable _stateChanged;			
-			std::chrono::nanoseconds _interval;
-			std::chrono::time_point<std::chrono::steady_clock> _nextInterval;			            
-			std::function<void()> _callBack;
+    namespace thread
+    {
+        class Timer::Impl
+        {
+        private:
+            std::mutex _stateLock;
+            std::condition_variable _stateChanged;
+            std::chrono::nanoseconds _interval;
+            std::chrono::time_point<std::chrono::steady_clock> _nextInterval;
+            std::function<void()> _callBack;
             std::thread _thread;
             bool _running = false;
-			void threadSpinner();
-		public:
-			Impl();
-			void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
-			void setCallback(const std::function<void()> &callback);
-			void setCallback(std::function<void()> &&callback);
-			void stop();
-			~Impl();
-		};
+            void threadSpinner();
+        public:
+            Impl();
+            void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
+            void setCallback(const std::function<void()> &callback);
+            void setCallback(std::function<void()> &&callback);
+            void stop();
+            ~Impl();
+        };
 
-		Timer::Impl::Impl()
-		{
+        Timer::Impl::Impl()
+        {
 
-		}
-
-
-		void Timer::Impl::threadSpinner()
-		{
-			std::function<void()> callBack;
-			while (_running) {
-				{
-					std::unique_lock<std::mutex> lock{ _stateLock };
-					_stateChanged.wait_until(lock, _nextInterval, [this]() {
-						return !_running || _nextInterval <= std::chrono::steady_clock::now();
-					});
-					if (!_running) break;
-					callBack = _callBack; // make copy of callback, so it can execute outside a lock and meanwhile be changed.
-					if (_interval > std::chrono::nanoseconds(0)) {
-						_nextInterval = std::chrono::steady_clock::now() + _interval;
-					}
-					else {
-						_running = false; // stop after executing callback.
-					}
-				}
-				if (callBack != nullptr) {
-					callBack();
-				}
-			}
-		}
+        }
 
 
-		void Timer::Impl::start(const std::chrono::nanoseconds & delay, const std::chrono::nanoseconds& interval)
-		{
-			{
-				std::unique_lock<std::mutex> lock{ _stateLock };				
-				_interval = interval;
-				_nextInterval = std::chrono::steady_clock::now() + delay;
-				if (!_running) {
-					_running = true;
-					_thread = std::thread(&Timer::Impl::threadSpinner, this);
-				}
-			}
-			_stateChanged.notify_all();
-		}
+        void Timer::Impl::threadSpinner()
+        {
+            std::function<void()> callBack;
+            while (_running) {
+                {
+                    std::unique_lock<std::mutex> lock{ _stateLock };
+                    _stateChanged.wait_until(lock, _nextInterval, [this]() {
+                        return !_running || _nextInterval <= std::chrono::steady_clock::now();
+                    });
+                    if (!_running) break;
+                    callBack = _callBack; // make copy of callback, so it can execute outside a lock and meanwhile be changed.
+                    if (_interval > std::chrono::nanoseconds(0)) {
+                        _nextInterval = std::chrono::steady_clock::now() + _interval;
+                    }
+                    else {
+                        _running = false; // stop after executing callback.
+                    }
+                }
+                if (callBack != nullptr) {
+                    callBack();
+                }
+            }
+        }
 
-		void Timer::Impl::setCallback(const std::function<void()> &callback)
-		{
-			{
-				std::unique_lock<std::mutex> lock{ _stateLock };
-				_callBack = callback;
-			}
-			_stateChanged.notify_all();
-		}
 
-		void Timer::Impl::setCallback(std::function<void()> &&callback)
-		{
-			{
-				std::unique_lock<std::mutex> lock{ _stateLock };
-				_callBack = std::move(callback);
-			}
-			_stateChanged.notify_all();
-		}
+        void Timer::Impl::start(const std::chrono::nanoseconds & delay, const std::chrono::nanoseconds& interval)
+        {
+            {
+                std::unique_lock<std::mutex> lock{ _stateLock };
+                _interval = interval;
+                _nextInterval = std::chrono::steady_clock::now() + delay;
+                if (!_running) {
+                    _running = true;
+                    _thread = std::thread(&Timer::Impl::threadSpinner, this);
+                }
+            }
+            _stateChanged.notify_all();
+        }
 
-		void Timer::Impl::stop()
-		{
-			std::unique_lock<std::mutex> lock{ _stateLock };
-			_running = false;
-			_stateChanged.notify_all();
-			if (_thread.joinable()) {
-				_thread.join();
-			}
-		}
+        void Timer::Impl::setCallback(const std::function<void()> &callback)
+        {
+            {
+                std::unique_lock<std::mutex> lock{ _stateLock };
+                _callBack = callback;
+            }
+            _stateChanged.notify_all();
+        }
 
-		Timer::Impl::~Impl()
-		{
-			stop();
-		}
+        void Timer::Impl::setCallback(std::function<void()> &&callback)
+        {
+            {
+                std::unique_lock<std::mutex> lock{ _stateLock };
+                _callBack = std::move(callback);
+            }
+            _stateChanged.notify_all();
+        }
 
-		Timer::Timer()
-			: _impl(std::make_unique<Impl>())
-		{
+        void Timer::Impl::stop()
+        {
+            std::unique_lock<std::mutex> lock{ _stateLock };
+            _running = false;
+            _stateChanged.notify_all();
+            if (_thread.joinable()) {
+                _thread.join();
+            }
+        }
 
-		}
+        Timer::Impl::~Impl()
+        {
+            stop();
+        }
+
+        Timer::Timer()
+            : _impl(std::make_unique<Impl>())
+        {
+
+        }
 
         Timer::Timer(const std::function<void()> &callback)
             : _impl(std::make_unique<Impl>())
@@ -162,39 +162,39 @@ namespace ccol
             setCallback(std::move(callback));
         }
 
-		void Timer::start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval)
-		{
-			_impl->start(delay, interval);
-		}
+        void Timer::start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval)
+        {
+            _impl->start(delay, interval);
+        }
 
-		void Timer::start(const std::chrono::nanoseconds& interval)
-		{
-			_impl->start(interval, interval);
-		}
+        void Timer::start(const std::chrono::nanoseconds& interval)
+        {
+            _impl->start(interval, interval);
+        }
 
-		void Timer::startSingleshot(const std::chrono::nanoseconds& delay)
-		{
-			_impl->start(delay, std::chrono::microseconds(0));
-		}
+        void Timer::startSingleshot(const std::chrono::nanoseconds& delay)
+        {
+            _impl->start(delay, std::chrono::microseconds(0));
+        }
 
-		void Timer::setCallback(const std::function<void()> &callback)
-		{
-			_impl->setCallback(callback);
-		}
+        void Timer::setCallback(const std::function<void()> &callback)
+        {
+            _impl->setCallback(callback);
+        }
 
-		void Timer::setCallback(std::function<void()> &&callback)
-		{
-			_impl->setCallback(std::move(callback));
-		}
+        void Timer::setCallback(std::function<void()> &&callback)
+        {
+            _impl->setCallback(std::move(callback));
+        }
 
-		void Timer::stop()
-		{
-			_impl->stop();
-		}
+        void Timer::stop()
+        {
+            _impl->stop();
+        }
 
-		Timer::~Timer()
-		{
+        Timer::~Timer()
+        {
 
-		}
-	}
+        }
+    }
 }
