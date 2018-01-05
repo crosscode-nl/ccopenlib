@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.9.0)
 project (
     CCOPENLIB
     VERSION 0.1.0.0
-    DESCRIPTION "CCOPENLIB is a free lightweight open source library that is based on C++14 to provide commonly needed patterns without dependencies."
+    DESCRIPTION "CCOPENLIB is a free open source library for C++14 that provides commonly needed patterns."
     LANGUAGES CXX
 )
 
