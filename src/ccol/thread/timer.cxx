@@ -71,7 +71,6 @@ namespace ccol
 
         }
 
-
         void Timer::Impl::threadSpinner()
         {
             std::function<void()> callBack;
@@ -95,7 +94,6 @@ namespace ccol
                 }
             }
         }
-
 
         void Timer::Impl::start(const std::chrono::nanoseconds & delay, const std::chrono::nanoseconds& interval)
         {
