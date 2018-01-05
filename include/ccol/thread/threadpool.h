@@ -45,7 +45,7 @@ namespace ccol
 {
     namespace thread {
 
-        ///	The ThreadPool class provides threadpool functionality.
+        /// \brief The ThreadPool class provides threadpool functionality.
         ///
         /// It uses a pool of std::thread instances internally.
         ///
