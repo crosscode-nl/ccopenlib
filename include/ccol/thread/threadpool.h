@@ -60,14 +60,14 @@ namespace ccol
 			std::unique_ptr<Impl> _impl;
 		public:
 			
-			/// Default constructor
+            /// \brief Default constructor
 			///
 			/// Creates an instance of the threadpool and automatically 
 			/// allocates an optimal pool of threads. You can check the 
 			/// amount of thread created by calling the method threadCount()
 			ThreadPool();
 			
-			/// Contructor to create an instance of ThreadPool with a certain amount of thread. 
+            /// \brief Contructor to create an instance of ThreadPool with a certain amount of thread.
 			///			
 			/// Creates an instance of the threadpool with the specified amount of threads. 
             ///
@@ -76,21 +76,21 @@ namespace ccol
 			/// \param threads The amount of threads created on the thread pool.			
 			ThreadPool(const unsigned int &threads);
 
-			/// Enqueue a job by copy.			
+            /// \brief Enqueue a job by copy.
             ///
             /// Enqueues a job on the threadpool by making a copy of the passed method.
 			///
 			/// \param method The method to be executed.
 			void enqueueJob(const std::function<void()> &method);
 
-			/// Enqueue multiple jobs by copy.
+            /// \brief Enqueue multiple jobs by copy.
             ///
             /// Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the vector.
 			///
 			/// \param methods A std::vector containing the methods to be executed.
 			void enqueueJob(const std::vector<std::function<void()>> &methods);
 
-			/// Enqueue multiple jobs from queue.
+            /// \brief Enqueue multiple jobs from queue.
             ///
             /// Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the queue.
             ///
@@ -102,21 +102,21 @@ namespace ccol
 			/// \param methods A std::queue containing the methods to be executed.
 			void enqueueJob(std::queue<std::function<void()>> methods); // copy because we need to pop...
 
-			/// Enqueue a job by using move semantics. 
+            /// \brief Enqueue a job by using move semantics.
             ///
             /// Enqueues a job on the threadpool by using move semantics the method to the queue.
 			///
 			/// \param method The method to be executed.
 			void enqueueJob(std::function<void()> &&method);
 
-			/// Enqueue multiple jobs by using move semantics. 
+            /// \brief Enqueue multiple jobs by using move semantics.
             ///
             /// Enqueues multiple jobs on the threadpool by using move semantics the method to the queue.
 			///
 			/// \param methods A std::vector containing the methods to be executed.
 			void enqueueJob(std::vector<std::function<void()>> &&methods);
 
-			/// Enqueue multiple jobs by using move semantics. 
+            /// \brief Enqueue multiple jobs by using move semantics.
             ///
             /// Enqueues multiple jobs on the threadpool by using move semantics the method to the queue.
 			///
@@ -128,7 +128,7 @@ namespace ccol
             /// \return The amount of jobs in the queue.
 			size_t jobsInQueueCount();
 
-			/// Returns the amount of threads in the pool.
+            /// \brief Returns the amount of threads in the pool.
             ///
             /// \return The amount of threads in the pool.
 			unsigned int threadCount();
@@ -136,13 +136,13 @@ namespace ccol
 			/// Removes all jobs from the queue. 
 			void clearQueue();
 
-            /// Removes all jobs from the queue, and returns them for re-adding them later.
+            /// \brief Removes all jobs from the queue, and returns them for re-adding them later.
             ///
             /// This can be used to 'pause' the processing of jobs on the threadpool.
             /// \return A std::queue with the jobs that where pending for execution
 			std::queue<std::function<void()>> pullJobsFromQueue();
 
-            /// The destructor
+            /// \brief The destructor
             ///
             /// Destructing the threadpool will lead to the std::thread to be stopped and
             /// joined. Any job that is still executing will block destruction until it is
