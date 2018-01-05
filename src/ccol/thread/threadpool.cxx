@@ -47,13 +47,13 @@ namespace ccol
 
 		class ThreadPool::Impl
 		{
-		private:
-			volatile bool _running = true;
-			unsigned int _threadCount = 0;
+		private:            
+            unsigned int _threadCount = 0;
 			std::vector<std::thread> _threads;
 			std::condition_variable _threadUnlocked;
 			std::queue<std::function<void()>> _jobs;
-			std::mutex _jobsMutex;
+			std::mutex _jobsMutex;            
+            volatile bool _running = true;
 			void threadSpinner();
 			inline std::function<void()> threadRetrieveCallback();
 			inline void lockedEnqueueJob(const std::vector<std::function<void()>> &methods);
@@ -86,7 +86,7 @@ namespace ccol
 			std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
 			std::queue<std::function<void()>> result = std::move(_jobs);
 			_jobs = std::queue<std::function<void()>>(); // create new empty queue/
-			return std::move(result);
+            return result;
 		}
 
 		unsigned int ThreadPool::Impl::threadCount()
@@ -124,7 +124,7 @@ namespace ccol
 			if (!_running) return nullptr;
 			callback = std::move(_jobs.front());
 			_jobs.pop();
-			return std::move(callback);
+            return callback;
 		}
 
 		void ThreadPool::Impl::threadSpinner()
