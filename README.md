@@ -1,7 +1,7 @@
 # CCOPENLIB
 ## WHAT IS IT?
 
-CCOPENLIB is a lightweight library that is based on C++14 that provides commonly needed patterns that I need in projects. 
+CCOPENLIB is a free lightweight open source library that is based on C++14 that provides commonly needed patterns. 
 
 ## GOAL
 
