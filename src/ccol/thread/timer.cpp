@@ -1,7 +1,7 @@
 /*
 SPDX-License-Identifier: MIT
 
-© 2017 CrossCode / Patrick Vollebregt - All rights reserved
+Â© 2017 CrossCode / Patrick Vollebregt - All rights reserved
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -40,6 +40,8 @@ If you have found any errors or improvements you'd like to share, please contact
 #include <atomic>
 #include <queue>
 #include <chrono>
+#include <condition_variable>
+
 namespace ccol
 {
 	namespace thread

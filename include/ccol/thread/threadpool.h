@@ -1,7 +1,7 @@
 /*
 	SPDX-License-Identifier: MIT	
 
-	© 2017 CrossCode / Patrick Vollebregt - All rights reserved
+	Â© 2017 CrossCode / Patrick Vollebregt - All rights reserved
 		
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -45,23 +45,83 @@ namespace ccol
 {
 	namespace thread {
 
+		///	The ThreadPool class provides threadpool functionality. 
+		/// 
+		/// It uses a pool of std::thread instances internally. 
+		/// It is written for performance, so be aware that exception handling is not supported. 
+		/// Throwing an uncaught exception from a job will get std::terminate to get called 
+		/// following the defined behavior of std::thread. 
 		class ThreadPool
 		{
 		private:
 			class Impl;
 			std::unique_ptr<Impl> _impl;
 		public:
+			
+			/// Default constructor
+			///
+			/// Creates an instance of the threadpool and automatically 
+			/// allocates an optimal pool of threads. You can check the 
+			/// amount of thread created by calling the method threadCount()
 			ThreadPool();
+			
+			/// Contructor to create an instance of ThreadPool with a certain amount of thread. 
+			///			
+			/// Creates an instance of the threadpool with the specified amount of threads. 
+			/// Specifying 0 threads will create the optimal amount of threads, just as de default constructor. 
+			///
+			/// \param threads The amount of threads created on the thread pool.			
 			ThreadPool(const unsigned int &threads);
+
+			/// Enqueue a job by copy.			
+			/// Enqueues a job on the threadpool by making a copy of the passed method. 
+			///
+			/// \param method The method to be executed.
 			void enqueueJob(const std::function<void()> &method);
+
+			/// Enqueue multiple jobs by copy.
+			/// Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the vector. 
+			///
+			/// \param methods A std::vector containing the methods to be executed.
 			void enqueueJob(const std::vector<std::function<void()>> &methods);
+
+			/// Enqueue multiple jobs from queue.
+			/// Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the queue. 
+			/// The parameter is passed by copy, since the only way to get items out of a queue is to pop them. 
+			/// This would not be possible with a const reference, and with a reference this would result in 
+			/// an emty queue.  
+			///
+			/// \param methods A std::queue containing the methods to be executed.
 			void enqueueJob(std::queue<std::function<void()>> methods); // copy because we need to pop...
+
+			/// Enqueue a job by using move semantics. 
+			/// Enqueues a job on the threadpool by using move semantics the method to the queue. 
+			///
+			/// \param method The method to be executed.
 			void enqueueJob(std::function<void()> &&method);
+
+			/// Enqueue multiple jobs by using move semantics. 
+			/// Enqueues multiple jobs on the threadpool by using move semantics the method to the queue. 
+			///
+			/// \param methods A std::vector containing the methods to be executed.
 			void enqueueJob(std::vector<std::function<void()>> &&methods);
+
+			/// Enqueue multiple jobs by using move semantics. 
+			/// Enqueues multiple jobs on the threadpool by using move semantics the method to the queue. 
+			///
+			/// \param methods A std::queue containing the methods to be executed.
 			void enqueueJob(std::queue<std::function<void()>> &&methods);
+
+			/// Returns the amount of jobs in the queue. 
 			size_t jobsInQueueCount();
+
+			/// Returns the amount of threads in the pool.
 			unsigned int threadCount();
+
+			/// Removes all jobs from the queue. 
 			void clearQueue();
+
+			/// Removes all jobs from the queue, and returns them f
 			std::queue<std::function<void()>> pullJobsFromQueue();
 			virtual ~ThreadPool();
 		};

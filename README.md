@@ -1,11 +1,11 @@
 # CCOPENLIB
 ## WHAT IS IT?
 
-CCOPENLIB is a lightweight library that is based on C++11 that provides commonly needed patterns that I need in projects. 
+CCOPENLIB is a lightweight library that is based on C++14 that provides commonly needed patterns that I need in projects. 
 
 ## GOAL
 
-It will have no other external dependencies other than C++11. 
+It will have no other external dependencies other than C++14. 
 
 It will provide classes that I commonly need and you might find in other libraries that are either subjected to change, too complex, too formal or too large. 
 
@@ -16,7 +16,7 @@ I provide this to the world under an MIT license as an appriciation to other lib
 ## LICENSE
 SPDX-License-Identifier: MIT	
 
-© 2017 CrossCode / Patrick Vollebregt - All rights reserved
+Â© 2017 CrossCode / Patrick Vollebregt - All rights reserved
 		
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
