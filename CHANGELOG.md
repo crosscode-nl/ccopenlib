@@ -9,6 +9,7 @@
 - Timer
 - Doxygen documentation
 - Logo assets
+
 ## Fixed
 - Bugs in ThreadPool
 - Chosen a license (MIT) more suitable to software. 
