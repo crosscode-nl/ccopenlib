@@ -6,12 +6,12 @@ project (
     LANGUAGES CXX
 )
 
-SET(HEADERS	
-	include/ccol/thread/threadpool.h
-	include/ccol/thread/timer.h
-) 
+SET(HEADERS
+        include/ccol/thread/threadpool.h
+        include/ccol/thread/timer.h
+)
 
-SET(SOURCES	
+SET(SOURCES
         src/ccol/thread/threadpool.cxx
         src/ccol/thread/timer.cxx
 )
@@ -29,5 +29,5 @@ add_dependencies(ccopenlib doc_doxygen)
 
 install(TARGETS ccopenlib
     LIBRARY DESTINATION lib
-	PUBLIC_HEADER DESTINATION include/ccopenlib
+        PUBLIC_HEADER DESTINATION include/ccopenlib
     ARCHIVE DESTINATION lib/static)

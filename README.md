@@ -11,7 +11,7 @@ It will provide classes that I commonly need and you might find in other librari
 
 ## WHY
 
-I provide this to the world under an MIT license as an appriciation to other libraries that are provided under permissive licenses that I might have used in the past. 
+I provide this to the world under an MIT license as an appreciation to other libraries that are provided under permissive licenses that I might have used in the past. 
 
 ## LICENSE
 SPDX-License-Identifier: MIT	
