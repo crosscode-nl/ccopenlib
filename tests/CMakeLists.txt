@@ -23,12 +23,4 @@ set(UNIT_TEST tests)
 
 add_test(NAME ${UNIT_TEST} COMMAND ${UNIT_TEST})
 
-#add_custom_command(
- #    TARGET ${UNIT_TEST}
-#     COMMENT "Run tests"
-#     POST_BUILD
-#     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-#     COMMAND ${CMAKE_CTEST_COMMAND} -C $<CONFIGURATION> -R "^${UNIT_TEST}$" --output-on-failures --debug
-#)
-
 target_include_directories(tests PRIVATE src)
