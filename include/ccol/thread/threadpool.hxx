@@ -43,6 +43,9 @@
 
 namespace ccol
 {
+    /**
+     * \brief The thread namespace contains classes and functions related to threads or threading.
+     */
     namespace thread {
 
         /** \brief The ThreadPool provides thread pooling functionality.

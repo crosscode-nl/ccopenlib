@@ -11,7 +11,7 @@ set(BUILD_QUALITY "Alpha")
 SET(HEADERS
         include/ccol/thread/threadpool.hxx
         include/ccol/thread/timer.hxx
-        include/ccol/version.hxx
+        include/ccol/version/version.hxx
 )
 
 SET(SOURCES
@@ -21,7 +21,7 @@ SET(SOURCES
 
 string(TIMESTAMP BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
 
-configure_file(include/ccol/version.hxx.in include/ccol/version.hxx @ONLY)
+configure_file(include/ccol/version/version.hxx.in include/ccol/version/version.hxx @ONLY)
 
 add_library(ccopenlib ${HEADERS} ${SOURCES})
 
@@ -31,8 +31,6 @@ set_property(TARGET ccopenlib PROPERTY PUBLIC_HEADER ${HEADERS})
 set_property(TARGET ccopenlib PROPERTY CXX_STANDARD 14)
 
 include(documentation.cmake)
-
-add_dependencies(ccopenlib doc_doxygen)
 
 install(TARGETS ccopenlib
     LIBRARY DESTINATION lib
