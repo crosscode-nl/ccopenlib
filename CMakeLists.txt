@@ -6,15 +6,22 @@ project (
     LANGUAGES CXX
 )
 
+set(BUILD_QUALITY "Alpha")
+
 SET(HEADERS
-        include/ccol/thread/threadpool.h
-        include/ccol/thread/timer.h
+        include/ccol/thread/threadpool.hxx
+        include/ccol/thread/timer.hxx
+        include/ccol/version.hxx
 )
 
 SET(SOURCES
         src/ccol/thread/threadpool.cxx
         src/ccol/thread/timer.cxx
 )
+
+string(TIMESTAMP BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
+
+configure_file(include/ccol/version.hxx.in include/ccol/version.hxx @ONLY)
 
 add_library(ccopenlib ${HEADERS} ${SOURCES})
 
@@ -29,5 +36,5 @@ add_dependencies(ccopenlib doc_doxygen)
 
 install(TARGETS ccopenlib
     LIBRARY DESTINATION lib
-        PUBLIC_HEADER DESTINATION include/ccopenlib
+    PUBLIC_HEADER DESTINATION include/ccopenlib
     ARCHIVE DESTINATION lib/static)

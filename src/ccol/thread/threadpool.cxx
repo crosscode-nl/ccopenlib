@@ -33,7 +33,7 @@ If you'd like to modify and/or share this code, share it under the same license,
 
 If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#include <ccol/thread/threadpool.h>
+#include <ccol/thread/threadpool.hxx>
 #include <vector>
 #include <thread>
 #include <mutex>
