@@ -6,6 +6,9 @@ project (
     LANGUAGES CXX
 )
 
+include(CTest)
+enable_testing()
+
 set(BUILD_QUALITY "Alpha")
 
 SET(HEADERS
@@ -31,6 +34,8 @@ set_property(TARGET ccopenlib PROPERTY PUBLIC_HEADER ${HEADERS})
 set_property(TARGET ccopenlib PROPERTY CXX_STANDARD 14)
 
 include(documentation.cmake)
+
+add_subdirectory(tests)
 
 install(TARGETS ccopenlib
     LIBRARY DESTINATION lib

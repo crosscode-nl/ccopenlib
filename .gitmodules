@@ -1,0 +1,3 @@
+[submodule "tests/googletest"]
+	path = tests/googletest
+	url = https://office.crosscode.nl:9443/forks/googletest.git
