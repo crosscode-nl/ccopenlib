@@ -22,8 +22,8 @@ if (BUILD_DOC)
         configure_file(${DOXYGEN_IN} ${DOXYGEN_OUT} @ONLY)
         message("Doxygen build started")
 
-        add_custom_command(TARGET ccopenlib
-                           POST_BUILD
+        add_custom_target(doxygen_docs
+                          ALL
                            COMMAND ${DOXYGEN_EXECUTABLE} ${DOXYGEN_OUT}
                            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                            COMMENT "Generating API documentation with Doxygen"
