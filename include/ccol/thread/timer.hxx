@@ -33,8 +33,8 @@ If you'd like to modify and/or share this code, share it under the same license,
 
 If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#ifndef COLL_THREAD_CCOPENLIB_TIMER_H
-#define COLL_THREAD_CCOPENLIB_TIMER_H
+#ifndef CCOL_THREAD_CCOPENLIB_TIMER_H
+#define CCOL_THREAD_CCOPENLIB_TIMER_H
 
 #include <memory>
 #include <vector>
@@ -140,4 +140,4 @@ namespace ccol
     }
 }
 
-#endif // COLL_THREAD_CCOPENLIB_TIMER_H
+#endif // CCOL_THREAD_CCOPENLIB_TIMER_H
