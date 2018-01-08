@@ -4,7 +4,22 @@
 
 Include header:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cxx}		
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~.cpp
+var a = 1;
+if (a==1) {
+	var b = a + 1; 
+}
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+```javascript
+var a = 1;
+if (a==1) {
+	var b = a + 1; 
+}
+```
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cxx}
 #include <ccol/thread/threadpool.hxx>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -14,7 +29,7 @@ To create a ThreadPool with an optimal amount of Threads:
 ccol::thread::ThreadPool threadpool;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To create a ThreadPool with an custom amount of Threads:		
+To create a ThreadPool with a specific amount of Threads:		
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cxx} 
 ccol::thread::ThreadPool threadpool{2}; // create 2 threads on the ThreadPool
