@@ -34,9 +34,9 @@ You could use this in combination with a Timer to run Timer events on the Thread
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 ccol::thread::ThreadPool threadpool;		
-auto wrappedlambda = coll:thread::thread_wrapper([]{
+auto wrappedlambda = ccol::thread::thread_wrapper([]{
 	// some code that will run on the ThreadPool LATER
-},threadpool);
+}, threadpool);
 for (int counter=0; counter<10; counter++) { // will create 10 jobs on the ThreadPool
 	wrappedlambda(); // will run on the ThreadPool
 }	
