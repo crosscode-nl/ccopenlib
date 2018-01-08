@@ -1,5 +1,5 @@
-#ifndef VERSION_HXX
-#define VERSION_HXX
+#ifndef COLL_VERSION_VERSION_HXX
+#define COLL_VERSION_VERSION_HXX
 #include <string>
 
 namespace ccol
@@ -293,4 +293,4 @@ namespace ccol
     }
 }
 
-#endif // VERSION_HXX
+#endif // COLL_VERSION_VERSION_HXX

@@ -14,7 +14,9 @@ set(BUILD_QUALITY "Alpha")
 SET(HEADERS
         include/ccol/thread/threadpool.hxx
         include/ccol/thread/timer.hxx
+        include/ccol/thread/thread_wrapper.hxx
         include/ccol/version/version.hxx
+        include/ccol/util/always_false.hxx
 )
 
 SET(SOURCES
