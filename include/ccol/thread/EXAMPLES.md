@@ -10,13 +10,13 @@ Include header:
 
 To create a ThreadPool with an optimal amount of Threads:
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~c++
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 ccol::thread::ThreadPool threadpool;
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To create a ThreadPool with a specific amount of Threads:		
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cxx
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 ccol::thread::ThreadPool threadpool{2}; // create 2 threads on the ThreadPool
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
