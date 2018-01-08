@@ -32,6 +32,24 @@ You could use this in combination with a Timer to run Timer events on the Thread
 			wrappedlambda(); // will run on the ThreadPool
 		}		
 
+The amount of jobs waiting to be processed can be retrieved by calling:
+
+		threadpool.jobsInQueueCount();
+
+The amount of thread available can be retrieved with the following call: 
+
+		ccol::thread::ThreadPool threadpool{2}; // create 2 threads on the ThreadPool
+		threadpool.threadCount(); // returns 2. 
+
+To pause or stop processing you can pull queued jobs from the threadpool. 
+
+		auto jobs = threadpool.pullJobsFromQueue();
+
+And to resume the jobs pulled from the threadpool you can enqueue them again.			
+
+		auto jobs = threadpool.pullJobsFromQueue();
+		threadpool.enqueueJobs(jobs);
+
 
 ## Timer
 
