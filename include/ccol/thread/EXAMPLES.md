@@ -12,7 +12,24 @@ if (a==1) {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
+```.cpp
+// cpp
+var a = 1;
+if (a==1) {
+	var b = a + 1; 
+}
+```
+
+```c
+// c
+var a = 1;
+if (a==1) {
+	var b = a + 1; 
+}
+```
+
 ```javascript
+// javascript
 var a = 1;
 if (a==1) {
 	var b = a + 1; 
