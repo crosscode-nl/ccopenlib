@@ -96,7 +96,7 @@ namespace ccol
              *
              *  \param methods A std::vector containing the methods to be executed.
              */
-            void enqueueJob(const std::vector<std::function<void()>> &methods);
+            void enqueueJobs(const std::vector<std::function<void()>> &methods);
 
             /** \brief Enqueue multiple jobs from queue.
              *
@@ -109,7 +109,7 @@ namespace ccol
              *
              *  \param methods A std::queue containing the methods to be executed.
              */
-            void enqueueJob(std::queue<std::function<void()>> methods); // copy because we need to pop...
+            void enqueueJobs(std::queue<std::function<void()>> methods); // copy because we need to pop...
 
             /**  \brief Enqueue a job by using move semantics.
              *
@@ -125,7 +125,7 @@ namespace ccol
              *
              *  \param methods A std::vector containing the methods to be executed.
              */
-            void enqueueJob(std::vector<std::function<void()>> &&methods);
+            void enqueueJobs(std::vector<std::function<void()>> &&methods);
 
             /** \brief Enqueue multiple jobs by using move semantics.
              *
@@ -133,7 +133,7 @@ namespace ccol
              *
              *  \param methods A std::queue containing the methods to be executed.
              */
-            void enqueueJob(std::queue<std::function<void()>> &&methods);
+            void enqueueJobs(std::queue<std::function<void()>> &&methods);
 
             /** Returns the amount of jobs in the queue.
              *
