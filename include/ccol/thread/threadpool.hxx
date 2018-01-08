@@ -84,62 +84,62 @@ namespace ccol
 
             /** \brief Enqueue a job by copy.
              *
-             *  Enqueues a job on the threadpool by making a copy of the passed method.
+             *  Enqueues a job on the threadpool by making a copy of the passed job.
              *
-             *  \param method The method to be executed.
+             *  \param job The job to be executed.
              */
-            void enqueueJob(const std::function<void()> &method);
+            void enqueue(const std::function<void()> &job);
 
             /** \brief Enqueue multiple jobs by copy.
              *
-             *  Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the vector.
+             *  Enqueues multiple jobs on the threadpool by making a copy of the passed jobs in the vector.
              *
-             *  \param methods A std::vector containing the methods to be executed.
+             *  \param jobs A std::vector containing the jobs to be executed.
              */
-            void enqueueJobs(const std::vector<std::function<void()>> &methods);
+            void enqueue(const std::vector<std::function<void()>> &jobs);
 
             /** \brief Enqueue multiple jobs from queue.
              *
-             *  Enqueues multiple jobs on the threadpool by making a copy of the passed methods in the queue.
+             *  Enqueues multiple jobs on the threadpool by making a copy of the passed jobs in the queue.
              *
              *  The parameter is passed by copy, since the only way to get items out of a queue is to pop them.
              *
              *  This would not be possible with a const reference, and with a reference this would result in
              *  an emty queue.
              *
-             *  \param methods A std::queue containing the methods to be executed.
+             *  \param jobs A std::queue containing the jobs to be executed.
              */
-            void enqueueJobs(std::queue<std::function<void()>> methods); // copy because we need to pop...
+            void enqueue(std::queue<std::function<void()>> jobs); // copy because we need to pop...
 
             /**  \brief Enqueue a job by using move semantics.
              *
-             *  Enqueues a job on the threadpool by using move semantics the method to the queue.
+             *  Enqueues a job on the threadpool by using move semantics the job to the queue.
              *
-             *  \param method The method to be executed.
+             *  \param job The job to be executed.
              */
-            void enqueueJob(std::function<void()> &&method);
+            void enqueue(std::function<void()> &&job);
 
             /** \brief Enqueue multiple jobs by using move semantics.
              *
-             *  Enqueues multiple jobs on the threadpool by using move semantics the method to the queue.
+             *  Enqueues multiple jobs on the threadpool by using move semantics the job to the queue.
              *
-             *  \param methods A std::vector containing the methods to be executed.
+             *  \param jobs A std::vector containing the jobs to be executed.
              */
-            void enqueueJobs(std::vector<std::function<void()>> &&methods);
+            void enqueue(std::vector<std::function<void()>> &&jobs);
 
             /** \brief Enqueue multiple jobs by using move semantics.
              *
-             *  Enqueues multiple jobs on the threadpool by using move semantics the method to the queue.
+             *  Enqueues multiple jobs on the threadpool by using move semantics.
              *
-             *  \param methods A std::queue containing the methods to be executed.
+             *  \param jobs A std::queue containing the jobs to be executed.
              */
-            void enqueueJobs(std::queue<std::function<void()>> &&methods);
+            void enqueue(std::queue<std::function<void()>> &&jobs);
 
             /** Returns the amount of jobs in the queue.
              *
              *  \return The amount of jobs in the queue.
              */
-            size_t jobsInQueueCount();
+            size_t queueCount();
 
             /** \brief Returns the amount of threads in the pool.
              *
@@ -148,14 +148,14 @@ namespace ccol
             unsigned int threadCount() const;
 
             /**  Removes all jobs from the queue. */
-            void clearQueue();
+            void clear();
 
             /**  \brief Removes all jobs from the queue, and returns them for re-adding them later.
              *
              *  This can be used to 'pause' the processing of jobs on the threadpool.
              *  \return A std::queue with the jobs that where pending for execution
              */
-            std::queue<std::function<void()>> pullJobsFromQueue();
+            std::queue<std::function<void()>> dequeueAll();
 
             /** \brief Wraps the provided lambda in another lambda that will execute on the ThreadPool.
              *
@@ -164,10 +164,10 @@ namespace ccol
              *
              * The returned lambda could be given to a timer as a callback to create reentrant callbacks.
              *
-             * \param method A lambda to be wrapped in lambda that will execute on the ThreadPool.
-             * \return The lambda that will add the lambda to the job queue when executed.
+             * \param job A lambda function to be wrapped in lambda that will execute on the ThreadPool.
+             * \return The lambda function that will add the lambda to the job queue when executed.
              */
-            std::function<void()> createWrapper(const std::function<void()> &method);
+            std::function<void()> createWrapper(const std::function<void()> &job);
 
             /** \brief The destructor
              *

@@ -56,32 +56,32 @@ namespace ccol
             volatile bool _running = true;
             void threadSpinner();
             inline std::function<void()> threadRetrieveCallback();
-            inline void lockedEnqueueJobs(const std::vector<std::function<void()>> &methods);
-            inline void lockedEnqueueJob(const std::function<void()> &method);
-            inline void lockedEnqueueJobs(std::vector<std::function<void()>> &&methods);
-            inline void lockedEnqueueJobs(std::queue<std::function<void()>> &&methods);
-            inline void lockedEnqueueJob(std::function<void()> &&method);
+            inline void lockedEnqueue(const std::vector<std::function<void()>> &jobs);
+            inline void lockedEnqueue(const std::function<void()> &job);
+            inline void lockedEnqueue(std::vector<std::function<void()>> &&jobs);
+            inline void lockedEnqueue(std::queue<std::function<void()>> &&jobs);
+            inline void lockedEnqueue(std::function<void()> &&job);
         public:
             Impl(const unsigned int &threads);
-            inline void enqueueJob(const std::function<void()> &method);
-            inline void enqueueJobs(const std::vector<std::function<void()>> &methods);
-            inline void enqueueJob(std::function<void()> &&method);
-            inline void enqueueJobs(std::vector<std::function<void()>> &&methods);
-            inline void enqueueJobs(std::queue<std::function<void()>> &&methods);
-            inline size_t jobsInQueueCount();
+            inline void enqueue(const std::function<void()> &job);
+            inline void enqueue(const std::vector<std::function<void()>> &jobs);
+            inline void enqueue(std::function<void()> &&job);
+            inline void enqueue(std::vector<std::function<void()>> &&jobs);
+            inline void enqueue(std::queue<std::function<void()>> &&jobs);
+            inline size_t queueCount();
             inline unsigned int threadCount() const;
-            inline void clearQueue();
-            inline std::queue<std::function<void()>> pullJobsFromQueue();
+            inline void clear();
+            inline std::queue<std::function<void()>> dequeueAll();
             ~Impl();
         };
 
-        inline void ThreadPool::Impl::clearQueue()
+        inline void ThreadPool::Impl::clear()
         {
             std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
             _jobs = std::queue<std::function<void()>>();
         }
 
-        inline std::queue<std::function<void()>> ThreadPool::Impl::pullJobsFromQueue()
+        inline std::queue<std::function<void()>> ThreadPool::Impl::dequeueAll()
         {
             std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
             std::queue<std::function<void()>> result = std::move(_jobs);
@@ -94,7 +94,7 @@ namespace ccol
             return _threadCount;
         }
 
-        size_t ThreadPool::Impl::jobsInQueueCount()
+        size_t ThreadPool::Impl::queueCount()
         {
             std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
             return _jobs.size();
@@ -137,72 +137,72 @@ namespace ccol
             }
         }
 
-        void ThreadPool::Impl::lockedEnqueueJobs(const std::vector<std::function<void()>> &methods)
+        void ThreadPool::Impl::lockedEnqueue(const std::vector<std::function<void()>> &jobs)
         {
             std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
-            for (const auto &method : methods) {
-                _jobs.push(method);
+            for (const auto &job : jobs) {
+                _jobs.push(job);
             }
         }
 
 
-        void ThreadPool::Impl::lockedEnqueueJob(const std::function<void()> &method)
+        void ThreadPool::Impl::lockedEnqueue(const std::function<void()> &job)
         {
             std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
-            _jobs.push(method);
+            _jobs.push(job);
         }
 
-        void ThreadPool::Impl::lockedEnqueueJobs(std::vector<std::function<void()>> &&methods)
+        void ThreadPool::Impl::lockedEnqueue(std::vector<std::function<void()>> &&jobs)
         {
             std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
-            for (const auto &method : methods) {
-                _jobs.push(std::move(method));
+            for (const auto &job : jobs) {
+                _jobs.push(std::move(job));
             }
         }
 
-        void ThreadPool::Impl::lockedEnqueueJobs(std::queue<std::function<void()>> &&methods)
+        void ThreadPool::Impl::lockedEnqueue(std::queue<std::function<void()>> &&jobs)
         {
             std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
-            while (!methods.empty()) {
-                _jobs.push(std::move(methods.front()));
-                methods.pop();
+            while (!jobs.empty()) {
+                _jobs.push(std::move(jobs.front()));
+                jobs.pop();
             }
         }
 
-        void ThreadPool::Impl::lockedEnqueueJob(std::function<void()> &&method)
+        void ThreadPool::Impl::lockedEnqueue(std::function<void()> &&job)
         {
             std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
-            _jobs.push(std::move(method));
+            _jobs.push(std::move(job));
         }
 
-        void ThreadPool::Impl::enqueueJob(const std::function<void()> &method)
+        void ThreadPool::Impl::enqueue(const std::function<void()> &job)
         {
-            lockedEnqueueJob(method);
+            lockedEnqueue(job);
             _threadUnlocked.notify_one(); // since one job is added, wake up one extra threads.
         }
 
-        void ThreadPool::Impl::enqueueJobs(const std::vector<std::function<void()>> &methods)
+        void ThreadPool::Impl::enqueue(const std::vector<std::function<void()>> &jobs)
         {
-            lockedEnqueueJobs(methods);
+            lockedEnqueue(jobs);
             _threadUnlocked.notify_all(); // multiple jobs are added, wake up all threads.
         }
 
 
-        void ThreadPool::Impl::enqueueJob(std::function<void()> &&method)
+        void ThreadPool::Impl::enqueue(std::function<void()> &&job)
         {
-            lockedEnqueueJob(std::move(method));
+            lockedEnqueue(std::move(job));
             _threadUnlocked.notify_one(); // since one job is added, wake up one extra threads.
         }
 
-        void ThreadPool::Impl::enqueueJobs(std::vector<std::function<void()>> &&methods)
+        void ThreadPool::Impl::enqueue(std::vector<std::function<void()>> &&jobs)
         {
-            lockedEnqueueJobs(std::move(methods));
+            lockedEnqueue(std::move(jobs));
             _threadUnlocked.notify_all(); // multiple jobs are added, wake up all threads.
         }
 
-        void ThreadPool::Impl::enqueueJobs(std::queue<std::function<void()>> &&methods)
+        void ThreadPool::Impl::enqueue(std::queue<std::function<void()>> &&jobs)
         {
-            lockedEnqueueJobs(std::move(methods));
+            lockedEnqueue(std::move(jobs));
             _threadUnlocked.notify_all(); // multiple jobs are added, wake up all threads.
         }
 
@@ -229,39 +229,39 @@ namespace ccol
         {
         }
 
-        void ThreadPool::enqueueJob(const std::function<void()> &method)
+        void ThreadPool::enqueue(const std::function<void()> &job)
         {
-            _impl->enqueueJob(method);
+            _impl->enqueue(job);
         }
 
-        void ThreadPool::enqueueJobs(const std::vector<std::function<void()>> &methods)
+        void ThreadPool::enqueue(const std::vector<std::function<void()>> &jobs)
         {
-            _impl->enqueueJobs(methods);
+            _impl->enqueue(jobs);
         }
 
-        void ThreadPool::enqueueJobs(std::queue<std::function<void()>> methods)
+        void ThreadPool::enqueue(std::queue<std::function<void()>> jobs)
         {
-            _impl->enqueueJobs(std::move(methods));
+            _impl->enqueue(std::move(jobs));
         }
 
-        void ThreadPool::enqueueJob(std::function<void()> &&method)
+        void ThreadPool::enqueue(std::function<void()> &&job)
         {
-            _impl->enqueueJob(std::move(method));
+            _impl->enqueue(std::move(job));
         }
 
-        void ThreadPool::enqueueJobs(std::vector<std::function<void()>> &&methods)
+        void ThreadPool::enqueue(std::vector<std::function<void()>> &&jobs)
         {
-            _impl->enqueueJobs(std::move(methods));
+            _impl->enqueue(std::move(jobs));
         }
 
-        void ThreadPool::enqueueJobs(std::queue<std::function<void()>> &&methods)
+        void ThreadPool::enqueue(std::queue<std::function<void()>> &&jobs)
         {
-            _impl->enqueueJobs(std::move(methods));
+            _impl->enqueue(std::move(jobs));
         }
 
-        size_t ThreadPool::jobsInQueueCount()
+        size_t ThreadPool::queueCount()
         {
-            return _impl->jobsInQueueCount();
+            return _impl->queueCount();
         }
 
         unsigned int ThreadPool::threadCount() const
@@ -269,20 +269,20 @@ namespace ccol
             return _impl->threadCount();
         }
 
-        void ThreadPool::clearQueue()
+        void ThreadPool::clear()
         {
-            return _impl->clearQueue();
+            return _impl->clear();
         }
 
-        std::queue<std::function<void()>> ThreadPool::pullJobsFromQueue()
+        std::queue<std::function<void()>> ThreadPool::dequeueAll()
         {
-            return _impl->pullJobsFromQueue();
+            return _impl->dequeueAll();
         }
 
-        std::function<void ()> ThreadPool::createWrapper(const std::function<void ()> &method)
+        std::function<void ()> ThreadPool::createWrapper(const std::function<void ()> &job)
         {
-            return [this,method]() {
-                enqueueJob(method);
+            return [this,job]() {
+                enqueue(job);
             };
         }
 
