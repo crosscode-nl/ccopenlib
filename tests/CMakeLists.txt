@@ -5,12 +5,10 @@ project (
 )
 
 SET(HEADERS
-    src/sample1.h
 )
 
 SET(SOURCES
-    src/sample1.cc
-    src/sample1_unittest.cc
+    src/ccol/thread/threadpool_unittest.cxx
 )
 
 add_subdirectory(googletest)
@@ -18,6 +16,8 @@ add_subdirectory(googletest)
 add_executable(tests ${HEADERS} ${SOURCES})
 
 target_link_libraries(tests gtest_main ccopenlib)
+
+set_property(TARGET tests PROPERTY CXX_STANDARD 14)
 
 set(UNIT_TEST tests)
 

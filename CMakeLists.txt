@@ -22,6 +22,7 @@ SET(HEADERS
 SET(SOURCES
         src/ccol/thread/threadpool.cxx
         src/ccol/thread/timer.cxx
+        src/ccol/thread/thread_wrapper.cxx
 )
 
 string(TIMESTAMP BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)

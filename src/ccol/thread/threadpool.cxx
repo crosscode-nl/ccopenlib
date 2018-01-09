@@ -77,13 +77,13 @@ namespace ccol
 
         inline void ThreadPool::Impl::clear()
         {
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             _jobs = std::queue<std::function<void()>>();
         }
 
         inline std::queue<std::function<void()>> ThreadPool::Impl::dequeueAll()
         {
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             std::queue<std::function<void()>> result = std::move(_jobs);
             _jobs = std::queue<std::function<void()>>(); // create new empty queue/
             return result;
@@ -96,7 +96,7 @@ namespace ccol
 
         size_t ThreadPool::Impl::queueCount()
         {
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             return _jobs.size();
         }
 
@@ -123,7 +123,7 @@ namespace ccol
         std::function<void()> ThreadPool::Impl::threadRetrieveCallback()
         {
             std::function<void()> callback = nullptr;
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             _threadUnlocked.wait(jobsMutexLock, [this]() { return !_jobs.empty() || !_running; });
             if (!_running) return nullptr;
             callback = std::move(_jobs.front());
@@ -143,7 +143,7 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(const std::vector<std::function<void()>> &jobs)
         {
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             for (const auto &job : jobs) {
                 _jobs.push(job);
             }
@@ -152,13 +152,13 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(const std::function<void()> &job)
         {
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             _jobs.push(job);
         }
 
         void ThreadPool::Impl::lockedEnqueue(std::vector<std::function<void()>> &&jobs)
         {
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             for (const auto &job : jobs) {
                 _jobs.push(std::move(job));
             }
@@ -166,7 +166,7 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(std::queue<std::function<void()>> &&jobs)
         {
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             while (!jobs.empty()) {
                 _jobs.push(std::move(jobs.front()));
                 jobs.pop();
@@ -175,7 +175,7 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(std::function<void()> &&job)
         {
-            std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex };
+            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
             _jobs.push(std::move(job));
         }
 
@@ -214,7 +214,7 @@ namespace ccol
         {
             _running = false;
             { // scope to release the lock.
-                std::unique_lock<std::mutex> jobsMutexLock{ _jobsMutex }; // acquire lock, otherwise not all threads are waiting...
+                std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex); // acquire lock, otherwise not all threads are waiting...
                 _threadUnlocked.notify_all();
             }
 
@@ -291,6 +291,13 @@ namespace ccol
         std::queue<std::function<void()>> ThreadPool::dequeueAll()
         {
             return _impl->dequeueAll();
+        }
+
+        std::function<void ()> ThreadPool::wrapper(const std::function<void ()> &job)
+        {
+            return [this, job]{
+                enqueue(job);
+            };
         }
 
         ThreadPool::~ThreadPool()

@@ -40,7 +40,7 @@
 #include <vector>
 #include <queue>
 #include <functional>
-#include <ccol/thread/thread_wrapper.hxx>
+#include <thread>
 
 namespace ccol
 {
@@ -186,29 +186,25 @@ namespace ccol
              *  completed. Therefore it is adviced if you add long running jobs, that you
              *  add some cancelation mechanism.
              */
+
+
+            /** \brief Wraps the provided job in another lambda function that will execute the job on the provided ThreadPool.
+             *
+             * The lambda function provided will be wrapped in the returned lambda function that each time it is
+             * called will add the provided lambda function to the job queue on the provided threadpool.
+             *
+             * WARNING: The threadpool must exist when the returned lambda function is invoked, otherwise
+             * undefined behavior (a crash, I hope...) is to be expected.
+             *
+             * The returned lambda could be given to a timer as a callback to create reentrant callbacks.
+             *
+             * \param job A lambda function to be wrapped.
+             * \return The lambda function that will add the job to the job queue when executed.
+             */
+            std::function<void()> wrapper(const std::function<void()> &job);
+
             virtual ~ThreadPool();
         };
-
-        /** \brief Wraps the provided job in another lambda function that will execute the job on the provided ThreadPool.
-         *
-         * The lambda provided will be wrapped in the returned lambda that each time it will
-         * be called will add the provided lambda to the job queue on the provided threadpool.
-         *
-         * WARNING: The threadpool must exist when the returned method is invoked, otherwise
-         * undefined behavior (a crash, I hope...) is to be expected.
-         *
-         * The returned lambda could be given to a timer as a callback to create reentrant callbacks.
-         *
-         * \param job A lambda function to be wrapped.
-         * \param threadpool A reference to a threadpool
-         * \return The lambda function that will add the job to the job queue when executed.
-         */
-        template<>
-        std::function<void()> thread_wrapper<::ccol::thread::ThreadPool>(const std::function<void()> &job, ::ccol::thread::ThreadPool &threadpool) {
-            return [job,&threadpool]{
-                threadpool.enqueue(job);
-            };
-        }
     }
 }
 

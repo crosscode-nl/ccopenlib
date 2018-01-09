@@ -75,7 +75,7 @@ namespace ccol
             std::function<void()> callBack;
             while (_running) {
                 {
-                    std::unique_lock<std::mutex> lock{ _stateLock };
+                    std::unique_lock<std::mutex> lock( _stateLock );
                     _stateChanged.wait_until(lock, _nextInterval, [this]() {
                         return !_running || _nextInterval <= std::chrono::steady_clock::now();
                     });
@@ -97,7 +97,7 @@ namespace ccol
         void Timer::Impl::start(const std::chrono::nanoseconds & delay, const std::chrono::nanoseconds& interval)
         {
             {
-                std::unique_lock<std::mutex> lock{ _stateLock };
+                std::unique_lock<std::mutex> lock( _stateLock );
                 _interval = interval;
                 _nextInterval = std::chrono::steady_clock::now() + delay;
                 if (!_running) {
@@ -111,7 +111,7 @@ namespace ccol
         void Timer::Impl::setCallback(const std::function<void()> &callback)
         {
             {
-                std::unique_lock<std::mutex> lock{ _stateLock };
+                std::unique_lock<std::mutex> lock( _stateLock );
                 _callBack = callback;
             }
             _stateChanged.notify_all();
@@ -120,7 +120,7 @@ namespace ccol
         void Timer::Impl::setCallback(std::function<void()> &&callback)
         {
             {
-                std::unique_lock<std::mutex> lock{ _stateLock };
+                std::unique_lock<std::mutex> lock( _stateLock );
                 _callBack = std::move(callback);
             }
             _stateChanged.notify_all();
@@ -128,7 +128,7 @@ namespace ccol
 
         void Timer::Impl::stop()
         {
-            std::unique_lock<std::mutex> lock{ _stateLock };
+            std::unique_lock<std::mutex> lock( _stateLock );
             _running = false;
             _stateChanged.notify_all();
             if (_thread.joinable()) {
