@@ -62,7 +62,7 @@ namespace ccol
             inline void lockedEnqueue(std::queue<std::function<void()>> &&jobs);
             inline void lockedEnqueue(std::function<void()> &&job);
         public:
-            Impl(const unsigned int &threads);
+            Impl(const unsigned int &threads, const std::function<void(std::thread&)> &threadCreateCallback);
             inline void enqueue(const std::function<void()> &job);
             inline void enqueue(const std::vector<std::function<void()>> &jobs);
             inline void enqueue(std::function<void()> &&job);
@@ -100,7 +100,7 @@ namespace ccol
             return _jobs.size();
         }
 
-        ThreadPool::Impl::Impl(const unsigned int &threads)
+        ThreadPool::Impl::Impl(const unsigned int &threads, const std::function<void(std::thread&)> &threadCreateCallback)
         {
             if (threads == 0) {
                 _threadCount = std::thread::hardware_concurrency();
@@ -112,7 +112,11 @@ namespace ccol
                 _threadCount = 1;
             }
             for (unsigned int idx = 0; idx < _threadCount; idx++) {
-                _threads.push_back(std::thread(&Impl::threadSpinner, this));
+                std::thread thread = std::thread(&Impl::threadSpinner, this);
+                if (threadCreateCallback!=nullptr) {
+                    threadCreateCallback(thread);
+                }
+                _threads.push_back(std::move(thread));
             }
         }
 
@@ -220,12 +224,22 @@ namespace ccol
         }
 
         ThreadPool::ThreadPool()
-            : _impl(std::make_unique<Impl>(0))
+            : _impl(std::make_unique<Impl>(0,nullptr))
+        {
+        }
+
+        ThreadPool::ThreadPool(const std::function<void (std::thread &)> &threadCreateCallback)
+        : _impl(std::make_unique<Impl>(0,threadCreateCallback))
         {
         }
 
         ThreadPool::ThreadPool(const unsigned int &threads)
-            : _impl(std::make_unique<Impl>(threads))
+            : _impl(std::make_unique<Impl>(threads,nullptr))
+        {
+        }
+
+        ThreadPool::ThreadPool(const unsigned int &threads, const std::function<void(std::thread&)> &threadCreateCallback)
+            : _impl(std::make_unique<Impl>(threads,threadCreateCallback))
         {
         }
 

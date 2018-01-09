@@ -73,6 +73,16 @@ namespace ccol
              */
             ThreadPool();
 
+            /** \brief Default constructor
+             *
+             *  Creates an instance of the threadpool and automatically
+             *  allocates an optimal pool of threads. You can check the
+             *  amount of thread created by calling the method threadCount()
+             *
+             *  \param threadCreateCallback Callback that allow you to perform operations on the std::thread when they are created.
+             */
+            ThreadPool(const std::function<void(std::thread&)> &threadCreateCallback);
+
             /** \brief Contructor to create an instance of ThreadPool with a certain amount of thread.
              *
              *  Creates an instance of the threadpool with the specified amount of threads.
@@ -82,6 +92,17 @@ namespace ccol
              *  \param threads The amount of threads created on the thread pool.
              */
             ThreadPool(const unsigned int &threads);
+
+            /** \brief Contructor to create an instance of ThreadPool with a certain amount of thread.
+             *
+             *  Creates an instance of the threadpool with the specified amount of threads.
+             *
+             *  Specifying 0 threads will create the optimal amount of threads, just as de default constructor.
+             *
+             *  \param threads The amount of threads created on the thread pool.
+             *  \param threadCreateCallback Callback that allow you to perform operations on the std::thread when they are created.
+             */
+            ThreadPool(const unsigned int &threads, const std::function<void(std::thread&)> &threadCreateCallback);
 
             /** \brief Enqueue a job by copy.
              *
