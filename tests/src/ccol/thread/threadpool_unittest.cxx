@@ -85,7 +85,6 @@ struct ThreadPoolTestContext
         {
             std::unique_lock<std::mutex> syncLock2(synchronizerMutex);
         }
-
         cv.notify_one();
         {
             std::unique_lock<std::mutex> terminateLock(waitTerminateMutex);
@@ -199,14 +198,41 @@ TEST(ThreadPool, ExecutedFourOfFourThreadsWithDequeInBetween)
         EXPECT_EQ(2,threadpool.queueCount());
         EXPECT_EQ(2,tptc.count);
         jobs = threadpool.dequeueAll();
+        EXPECT_EQ(0,threadpool.queueCount());
         EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.count2==2; }));
         EXPECT_EQ(2,tptc.count2);
         threadpool.enqueue(jobs);
-        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.count==4; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==4; }));
+        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.count2==4; }));
     }
 
     EXPECT_EQ(2,threadpool.threadCount());
     EXPECT_EQ(4,tptc.count);
 }
+
+TEST(ThreadPool, ExecutedTwoOfFourEmittedByWrapper)
+{
+    using namespace std::literals::chrono_literals;
+
+    ThreadPoolTestContext tptc;
+    ccol::thread::ThreadPool threadpool(2);
+    {
+        std::unique_lock<std::mutex> lk2(tptc.waitTerminateMutex);
+
+        auto wrappedJob = threadpool.wrapper(tptc.job);
+        wrappedJob();
+        wrappedJob();
+        wrappedJob();
+        wrappedJob();
+
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==2; }));
+        EXPECT_EQ(2,threadpool.queueCount());
+        EXPECT_EQ(2,threadpool.dequeueAll().size());
+        EXPECT_EQ(0,threadpool.queueCount());
+    }
+    EXPECT_EQ(2,threadpool.threadCount());
+    EXPECT_EQ(2,tptc.count);
+}
+
 
 }
