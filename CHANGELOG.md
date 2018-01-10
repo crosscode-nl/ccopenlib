@@ -3,6 +3,17 @@
 # Future version
 - Unit tests
 - CancellationToken & Source
+- EventQueue
+
+# Version 0.2.0.0 (2018-01-08)
+## Added 
+- Modified threadpool semantics
+- Created thread_wrap
+- Added documentation
+- Finished and tested threadpool
+
+## Fixed
+- Compile errors
 
 # Version 0.1.0.0 (2018-01-06)
 ## Added
@@ -20,3 +31,12 @@
 ## Added
 - Initial ThreadPool development.
 - Initial License (Creative Commons)
+
+When writing changelog notes use these to group changes:
+
+- **Added** for new features.
+- **Changed** for changes in existing functionality.
+- **Deprecated** for once-stable features removed in upcoming releases.
+- **Removed** for deprecated features removed in this release.
+- **Fixed** for any bug fixes.
+- **Security** to invite users to upgrade in case of vulnerabilities.
