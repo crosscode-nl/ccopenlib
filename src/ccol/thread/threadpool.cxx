@@ -293,7 +293,7 @@ namespace ccol
             return _impl->dequeueAll();
         }
 
-        std::function<void ()> ThreadPool::wrapper(const std::function<void ()> &job)
+        std::function<void ()> ThreadPool::wrap(const std::function<void ()> &job)
         {
             return [this, job]{
                 enqueue(job);

@@ -201,7 +201,7 @@ namespace ccol
              * \param job A lambda function to be wrapped.
              * \return The lambda function that will add the job to the job queue when executed.
              */
-            std::function<void()> wrapper(const std::function<void()> &job);
+            std::function<void()> wrap(const std::function<void()> &job);
 
             virtual ~ThreadPool();
         };

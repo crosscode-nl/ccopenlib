@@ -47,7 +47,7 @@ namespace ccol {
          * \param job A lambda function to be wrapped.
          * \return The lambda function that will run the job in a detached thread when executed.
          */
-        std::function<void()> thread_wrapper(const std::function<void()> &job);
+        std::function<void()> thread_wrap(const std::function<void()> &job);
 
     }
 }

@@ -14,7 +14,7 @@ set(BUILD_QUALITY "Alpha")
 SET(HEADERS
         include/ccol/thread/threadpool.hxx
         include/ccol/thread/timer.hxx
-        include/ccol/thread/thread_wrapper.hxx
+        include/ccol/thread/thread_wrap.hxx
         include/ccol/version/version.hxx
         include/ccol/util/always_false.hxx
 )
@@ -22,7 +22,7 @@ SET(HEADERS
 SET(SOURCES
         src/ccol/thread/threadpool.cxx
         src/ccol/thread/timer.cxx
-        src/ccol/thread/thread_wrapper.cxx
+        src/ccol/thread/thread_wrap.cxx
 )
 
 string(TIMESTAMP BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)

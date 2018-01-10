@@ -77,19 +77,21 @@ struct ThreadPoolTestContext
     std::condition_variable cv2;
     std::mutex synchronizerMutex;
     std::mutex waitTerminateMutex;
-    std::atomic_int count = {0};
-    std::atomic_int count2 = {0};
+    std::atomic_int startCount = {0};
+    std::atomic_int endCount = {0};
+    std::atomic_int middleCount = {0};
     std::unique_lock<std::mutex> syncLock{synchronizerMutex};
     std::function<void(void)> job = [this]{
-        count++;
+        startCount++;
         {
             std::unique_lock<std::mutex> syncLock2(synchronizerMutex);
         }
+        middleCount++;
         cv.notify_one();
         {
             std::unique_lock<std::mutex> terminateLock(waitTerminateMutex);
         }
-        count2++;
+        endCount++;
         cv2.notify_one();
     };
 };
@@ -99,19 +101,20 @@ TEST(ThreadPool, ExecutedTwoThreads)
     using namespace std::literals::chrono_literals;
 
     ThreadPoolTestContext tptc;
+    EXPECT_TRUE(tptc.syncLock.owns_lock());
     ccol::thread::ThreadPool threadpool(2);
 
     {
-        std::unique_lock<std::mutex>(waitTerminateMutex);
+        std::unique_lock<std::mutex> lk2(tptc.waitTerminateMutex);
         threadpool.enqueue(tptc.job);
         threadpool.enqueue(tptc.job);
 
-        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==2; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.startCount==2; }));
         EXPECT_EQ(0,threadpool.queueCount());
     }
     EXPECT_EQ(0,threadpool.queueCount());
     EXPECT_EQ(2,threadpool.threadCount());
-    EXPECT_EQ(2,tptc.count);
+    EXPECT_EQ(2,tptc.startCount);
 }
 
 TEST(ThreadPool, ExecutedTwoOfFourThreads)
@@ -128,13 +131,13 @@ TEST(ThreadPool, ExecutedTwoOfFourThreads)
         threadpool.enqueue(tptc.job);
         threadpool.enqueue(tptc.job);
 
-        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==2; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.startCount==2; }));
         EXPECT_EQ(2,threadpool.queueCount());
         EXPECT_EQ(2,threadpool.dequeueAll().size());
         EXPECT_EQ(0,threadpool.queueCount());
     }
     EXPECT_EQ(2,threadpool.threadCount());
-    EXPECT_EQ(2,tptc.count);
+    EXPECT_EQ(2,tptc.startCount);
 }
 
 TEST(ThreadPool, ExecutedFourThreadsFromVector)
@@ -144,16 +147,19 @@ TEST(ThreadPool, ExecutedFourThreadsFromVector)
     ThreadPoolTestContext tptc;
     ccol::thread::ThreadPool threadpool(2);
     {
-        std::unique_lock<std::mutex>(waitTerminateMutex);
+        std::unique_lock<std::mutex> lk2(tptc.waitTerminateMutex);
 
         threadpool.enqueue(std::vector<std::function<void()>>{tptc.job,tptc.job,tptc.job,tptc.job});
 
-        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==4; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.middleCount==2; }));
+        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.endCount==2; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.middleCount==4; }));
+        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.endCount==4; }));
         EXPECT_EQ(0,threadpool.queueCount());
     }
     EXPECT_EQ(0,threadpool.queueCount());
     EXPECT_EQ(2,threadpool.threadCount());
-    EXPECT_EQ(4,tptc.count);
+    EXPECT_EQ(4,tptc.startCount);
 }
 
 TEST(ThreadPool, ExecutedFourThreadsFromQueue)
@@ -163,7 +169,7 @@ TEST(ThreadPool, ExecutedFourThreadsFromQueue)
     ThreadPoolTestContext tptc;
     ccol::thread::ThreadPool threadpool(2);
     {
-        std::unique_lock<std::mutex>(waitTerminateMutex);
+        std::unique_lock<std::mutex> lk2(tptc.waitTerminateMutex);
 
         std::queue<std::function<void()>> jobs;
         for (int counter=0; counter<4; counter++) {
@@ -173,12 +179,15 @@ TEST(ThreadPool, ExecutedFourThreadsFromQueue)
         threadpool.enqueue(jobs);
 
         EXPECT_EQ(4,jobs.size());
-        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==4; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.middleCount==2; }));
+        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.endCount==2; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.middleCount==4; }));
+        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.endCount==4; }));
         EXPECT_EQ(0,threadpool.queueCount());
     }
     EXPECT_EQ(0,threadpool.queueCount());
     EXPECT_EQ(2,threadpool.threadCount());
-    EXPECT_EQ(4,tptc.count);
+    EXPECT_EQ(4,tptc.startCount);
 }
 
 TEST(ThreadPool, ExecutedFourOfFourThreadsWithDequeInBetween)
@@ -194,20 +203,20 @@ TEST(ThreadPool, ExecutedFourOfFourThreadsWithDequeInBetween)
         threadpool.enqueue(tptc.job);
         threadpool.enqueue(tptc.job);
         threadpool.enqueue(tptc.job);
-        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==2; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.startCount==2; }));
         EXPECT_EQ(2,threadpool.queueCount());
-        EXPECT_EQ(2,tptc.count);
+        EXPECT_EQ(2,tptc.startCount);
         jobs = threadpool.dequeueAll();
         EXPECT_EQ(0,threadpool.queueCount());
-        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.count2==2; }));
-        EXPECT_EQ(2,tptc.count2);
+        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.endCount==2; }));
+        EXPECT_EQ(2,tptc.endCount);
         threadpool.enqueue(jobs);
-        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==4; }));
-        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.count2==4; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.middleCount==4; }));
+        EXPECT_TRUE(tptc.cv2.wait_for(lk2, 200ms, [&tptc]{ return tptc.endCount==4; }));
     }
 
     EXPECT_EQ(2,threadpool.threadCount());
-    EXPECT_EQ(4,tptc.count);
+    EXPECT_EQ(4,tptc.startCount);
 }
 
 TEST(ThreadPool, ExecutedTwoOfFourEmittedByWrapper)
@@ -219,19 +228,19 @@ TEST(ThreadPool, ExecutedTwoOfFourEmittedByWrapper)
     {
         std::unique_lock<std::mutex> lk2(tptc.waitTerminateMutex);
 
-        auto wrappedJob = threadpool.wrapper(tptc.job);
+        auto wrappedJob = threadpool.wrap(tptc.job);
         wrappedJob();
         wrappedJob();
         wrappedJob();
         wrappedJob();
 
-        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.count==2; }));
+        EXPECT_TRUE(tptc.cv.wait_for(tptc.syncLock, 200ms, [&tptc]{ return tptc.startCount==2; }));
         EXPECT_EQ(2,threadpool.queueCount());
-        EXPECT_EQ(2,threadpool.dequeueAll().size());
+        threadpool.clear();
         EXPECT_EQ(0,threadpool.queueCount());
     }
     EXPECT_EQ(2,threadpool.threadCount());
-    EXPECT_EQ(2,tptc.count);
+    EXPECT_EQ(2,tptc.startCount);
 }
 
 

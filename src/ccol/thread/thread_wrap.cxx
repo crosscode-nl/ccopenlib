@@ -33,13 +33,13 @@ If you'd like to modify and/or share this code, share it under the same license,
 
 If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#include <ccol/thread/thread_wrapper.hxx>
+#include <ccol/thread/thread_wrap.hxx>
 #include <thread>
 
 namespace ccol {
     namespace thread {
 
-        std::function<void ()> thread_wrapper(const std::function<void ()> &job) {
+        std::function<void ()> thread_wrap(const std::function<void ()> &job) {
             return [job]{
                 std::thread thread{job};
                 thread.detach();
