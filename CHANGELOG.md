@@ -1,9 +1,13 @@
-# Changelog
+# Changelog {#changelog}
 
-# Future version
+# Future versions
+## Expected
 - Unit tests
 - CancellationToken & Source
 - EventQueue
+
+## Added 
+- CHANGELOG.md added to doxygen
 
 # Version 0.2.0.0 (2018-01-08)
 ## Added 
