@@ -40,10 +40,40 @@ If you have found any errors or improvements you'd like to share, please contact
 #include <chrono>
 #include <vector>
 #include <queue>
+#include <thread>
 #include "gtest/gtest.h"
 
 
-TEST(Timer, InstantiatedCorrect)
+TEST(Timer, Singleshot)
 {
+    using namespace std::literals::chrono_literals;
+
+    std::atomic_int count{0};
     ccol::thread::Timer timer;
+    timer.setCallback([&count]{
+        count++;
+    });
+
+    timer.startSingleshot(50ms);
+    std::this_thread::sleep_for(200ms);
+
+    EXPECT_EQ(1,count);
 }
+
+
+TEST(Timer, Interval50ms)
+{
+    using namespace std::literals::chrono_literals;
+
+    std::atomic_int count{0};
+    ccol::thread::Timer timer;
+    timer.setCallback([&count]{
+        count++;
+    });
+
+    timer.start(50ms);
+    std::this_thread::sleep_for(210ms);
+
+    EXPECT_EQ(4,count);
+}
+

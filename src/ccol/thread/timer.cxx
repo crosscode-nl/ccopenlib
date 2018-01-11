@@ -128,9 +128,11 @@ namespace ccol
 
         void Timer::Impl::stop()
         {
-            std::unique_lock<std::mutex> lock( _stateLock );
-            _running = false;
-            _stateChanged.notify_all();
+            {
+                std::unique_lock<std::mutex> lock( _stateLock );
+                _running = false;
+                _stateChanged.notify_all();
+            }
             if (_thread.joinable()) {
                 _thread.join();
             }
