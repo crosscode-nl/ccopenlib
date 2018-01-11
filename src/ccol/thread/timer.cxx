@@ -56,6 +56,7 @@ namespace ccol
             std::function<void()> _callBack;
             std::thread _thread;
             bool _running = false;
+            bool _threadRunning = true;
             void threadSpinner();
         public:
             Impl();
@@ -63,23 +64,25 @@ namespace ccol
             void setCallback(const std::function<void()> &callback);
             void setCallback(std::function<void()> &&callback);
             void stop();
+            void threadStop();
             ~Impl();
         };
 
         Timer::Impl::Impl()
         {
+            _thread = std::thread(&Timer::Impl::threadSpinner, this);
         }
 
         void Timer::Impl::threadSpinner()
         {
             std::function<void()> callBack;
-            while (_running) {
+            while (_threadRunning) {
                 {
                     std::unique_lock<std::mutex> lock( _stateLock );
                     _stateChanged.wait_until(lock, _nextInterval, [this]() {
-                        return !_running || _nextInterval <= std::chrono::steady_clock::now();
+                        return !_threadRunning || (_nextInterval <= std::chrono::steady_clock::now() && _running);
                     });
-                    if (!_running) break;
+                    if (!_running) continue;
                     callBack = _callBack; // make copy of callback, so it can execute outside a lock and meanwhile be changed.
                     if (_interval > std::chrono::nanoseconds(0)) {
                         _nextInterval = std::chrono::steady_clock::now() + _interval;
@@ -102,7 +105,6 @@ namespace ccol
                 _nextInterval = std::chrono::steady_clock::now() + delay;
                 if (!_running) {
                     _running = true;
-                    _thread = std::thread(&Timer::Impl::threadSpinner, this);
                 }
             }
             _stateChanged.notify_all();
@@ -133,6 +135,16 @@ namespace ccol
                 _running = false;
                 _stateChanged.notify_all();
             }
+        }
+
+        void Timer::Impl::threadStop()
+        {
+            {
+                std::unique_lock<std::mutex> lock( _stateLock );
+                _running = false;
+                _threadRunning = false;
+                _stateChanged.notify_all();
+            }
             if (_thread.joinable()) {
                 _thread.join();
             }
@@ -140,7 +152,7 @@ namespace ccol
 
         Timer::Impl::~Impl()
         {
-            stop();
+            threadStop();
         }
 
         Timer::Timer()
