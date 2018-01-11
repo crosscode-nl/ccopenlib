@@ -41,6 +41,8 @@ If you have found any errors or improvements you'd like to share, please contact
 #include <queue>
 #include <chrono>
 #include <condition_variable>
+#include <iostream>
+#include <algorithm>
 
 namespace ccol
 {
@@ -52,15 +54,17 @@ namespace ccol
             std::mutex _stateLock;
             std::condition_variable _stateChanged;
             std::chrono::nanoseconds _interval;
-            std::chrono::time_point<std::chrono::steady_clock> _nextInterval;
+            std::chrono::time_point<std::chrono::steady_clock> _nextInterval{std::chrono::steady_clock::now() + std::chrono::hours(24)};
             std::function<void()> _callBack;
             std::thread _thread;
+            unsigned int _reliablity = 1;
             bool _running = false;
             bool _threadRunning = true;
             void threadSpinner();
         public:
             Impl();
             void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
+            void setReliability(const unsigned int &reliability);
             void setCallback(const std::function<void()> &callback);
             void setCallback(std::function<void()> &&callback);
             void stop();
@@ -79,10 +83,20 @@ namespace ccol
             while (_threadRunning) {
                 {
                     std::unique_lock<std::mutex> lock( _stateLock );
-                    _stateChanged.wait_until(lock, _nextInterval, [this]() {
-                        return !_threadRunning || (_nextInterval <= std::chrono::steady_clock::now() && _running);
-                    });
-                    if (!_running) continue;
+
+                    auto duration = _nextInterval - std::chrono::steady_clock::now() - std::chrono::milliseconds(_reliablity);
+
+                    if (!_stateChanged.wait_for(lock, duration, [this]() {
+                        return !_threadRunning;
+                    })) {
+                        if (_nextInterval > std::chrono::steady_clock::now()) { // extra check to improve accuracy.
+                            continue;
+                        }
+                    }
+                    if (!_running) {
+                        _nextInterval = std::chrono::steady_clock::now() + std::chrono::hours(24);
+                        continue;
+                    }
                     callBack = _callBack; // make copy of callback, so it can execute outside a lock and meanwhile be changed.
                     if (_interval > std::chrono::nanoseconds(0)) {
                         _nextInterval = std::chrono::steady_clock::now() + _interval;
@@ -106,6 +120,15 @@ namespace ccol
                 if (!_running) {
                     _running = true;
                 }
+            }
+            _stateChanged.notify_all();
+        }
+
+        void Timer::Impl::setReliability(const unsigned int &reliability)
+        {
+            {
+                std::unique_lock<std::mutex> lock( _stateLock );
+                _reliablity = std::min(reliability,1000u);
             }
             _stateChanged.notify_all();
         }
@@ -170,6 +193,11 @@ namespace ccol
             : _impl(std::make_unique<Impl>())
         {
             setCallback(std::move(callback));
+        }
+
+        void Timer::setReliability(const unsigned int &reliability)
+        {
+            _impl->setReliability(reliability);
         }
 
         void Timer::start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval)

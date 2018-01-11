@@ -43,37 +43,67 @@ If you have found any errors or improvements you'd like to share, please contact
 #include <thread>
 #include "gtest/gtest.h"
 
+using namespace std::literals::chrono_literals;
+
+const auto interval = 100ms;
+
+struct TimerTestContext
+{
+    std::mutex mutex;
+    std::atomic_int count{0};
+    std::chrono::steady_clock::time_point start{std::chrono::steady_clock::now()};
+    std::chrono::steady_clock::time_point previous{std::chrono::steady_clock::now()};
+    std::function<void()> testMethod{[this]{
+            count.fetch_add(1);
+            std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+            std::cout << "ADD: " << std::chrono::duration_cast<std::chrono::milliseconds>((now - start)).count() << " (" << std::chrono::duration_cast<std::chrono::milliseconds>((now - previous)).count() << ")" << std::endl;
+            previous = now;
+    }};
+};
 
 TEST(Timer, Singleshot)
 {
-    using namespace std::literals::chrono_literals;
 
-    std::atomic_int count{0};
+    TimerTestContext t;
     ccol::thread::Timer timer;
-    timer.setCallback([&count]{
-        count++;
-    });
+    timer.setCallback(t.testMethod);
+    timer.setReliability(4);
 
-    timer.startSingleshot(50ms);
-    std::this_thread::sleep_for(200ms);
+    timer.startSingleshot(interval);
+    std::this_thread::sleep_for(interval * 3);
 
-    EXPECT_EQ(1,count);
+    EXPECT_EQ(1,t.count.load());
+    std::cout << "TEST END: " << std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::steady_clock::now() - t.start)).count();
 }
 
 
-TEST(Timer, Interval50ms)
+TEST(Timer, Interval)
 {
-    using namespace std::literals::chrono_literals;
-
-    std::atomic_int count{0};
+    TimerTestContext t;
     ccol::thread::Timer timer;
-    timer.setCallback([&count]{
-        count++;
-    });
+    timer.setCallback(t.testMethod);
+    timer.setReliability(25);
 
-    timer.start(50ms);
-    std::this_thread::sleep_for(210ms);
+    timer.start(interval);
+    std::this_thread::sleep_for((interval*400));
+    std::this_thread::sleep_for((interval/2));
 
-    EXPECT_EQ(4,count);
+    EXPECT_EQ(4,t.count.load());
+    std::cout << "TEST END: " << std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::steady_clock::now() - t.start)).count();
+}
+
+TEST(Timer, NoDelayInterval)
+{
+    TimerTestContext t;
+    ccol::thread::Timer timer;
+    timer.setCallback(t.testMethod);
+    timer.setReliability(4);
+
+    timer.start(0ms,interval);
+    std::this_thread::sleep_for((interval*4));
+    std::this_thread::sleep_for((interval/2));
+
+    EXPECT_EQ(5,t.count.load());
+    std::cout << "TEST END: " << std::chrono::duration_cast<std::chrono::milliseconds>((std::chrono::steady_clock::now() - t.start)).count();
 }
 

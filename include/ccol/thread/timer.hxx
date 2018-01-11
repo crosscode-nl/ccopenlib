@@ -82,6 +82,15 @@ namespace ccol
              */
             Timer(std::function<void()> &&callback);
 
+
+            /** \brief Sets the reliablity of the timer
+             *
+             * Improved the reliability of the timer by staring a busy_loop. Busy loops are expensive. Leave 0 is you can live with some inaccuracy.
+             *
+             * \param reliability Reliability parameter is used to determine the (aporximate) time before the expiration to start the busy loop. Use a value between 0 and 1000.
+             */
+            void setReliability(const unsigned int &reliability);
+
             /** \brief Start the timer with an interterval after an initial delay.
              *
              *  Use std::chrono::duration to set the initial delay and interval. For example std::chrono::milliseconds(1) or std::chrono::seconds(5)
