@@ -159,10 +159,10 @@ TEST(Timer, IntervalReplaceCallback)
 
     timer.start(interval);
     std::this_thread::sleep_for((interval*2));
+    std::this_thread::sleep_for((interval/2));
     timer.setCallback(t.onTimerSub);
     EXPECT_EQ(2,t.count.load());
     std::this_thread::sleep_for((interval*2));
-    std::this_thread::sleep_for((interval/2));
 
     EXPECT_EQ(0,t.count.load());
 }
@@ -178,4 +178,47 @@ TEST(Timer, SingleshotSetupCallbackViaConstructor)
 
     EXPECT_EQ(1,t.count.load());
 }
+
+
+TEST(Timer, IntervalStop)
+{
+    TimerTestContext t;
+    ccol::thread::Timer timer;
+    timer.setCallback(t.onTimerAdd);
+    timer.setReliability(reliablity);
+
+    timer.start(interval);
+    std::this_thread::sleep_for(interval*2);
+    std::this_thread::sleep_for(interval/2);
+    timer.stop();
+    EXPECT_EQ(2,t.count.load());
+    std::this_thread::sleep_for(interval*2);
+
+
+    EXPECT_EQ(2,t.count.load());
+}
+
+
+
+TEST(Timer, IntervalStopRestart)
+{
+    TimerTestContext t;
+    ccol::thread::Timer timer;
+    timer.setCallback(t.onTimerAdd);
+    timer.setReliability(reliablity);
+
+    timer.start(interval);
+    std::this_thread::sleep_for(interval*2);
+    std::this_thread::sleep_for(interval/2);
+    timer.stop();
+    EXPECT_EQ(2,t.count.load());
+    std::this_thread::sleep_for(interval*2);
+    EXPECT_EQ(2,t.count.load());
+    timer.start(interval);
+    std::this_thread::sleep_for(interval*2);
+    std::this_thread::sleep_for(interval/2);
+
+    EXPECT_EQ(4,t.count.load());
+}
+
 
