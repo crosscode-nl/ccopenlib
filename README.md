@@ -1,4 +1,7 @@
 # CCOPENLIB
+
+[![Build Status](https://travis-ci.org/crosscode-nl/ccopenlib.svg?branch=master)](https://travis-ci.org/crosscode-nl/ccopenlib)
+
 ## WHAT IS IT?
 
 CCOPENLIB is a free open source library for C++14 that provides commonly needed patterns.
