@@ -129,6 +129,7 @@ TEST(Timer, IntervalReschedule)
     std::this_thread::sleep_for((interval/2));
     timer.start(interval*2);
     std::this_thread::sleep_for((interval*2));
+    std::this_thread::sleep_for((interval/2));
 
     EXPECT_EQ(3,t.count.load());
 }
