@@ -9,6 +9,7 @@ SET(HEADERS
 
 SET(SOURCES
     src/ccol/thread/threadpool_unittest.cxx
+    src/ccol/thread/timer_unittest.cxx
 )
 
 add_subdirectory(googletest)
