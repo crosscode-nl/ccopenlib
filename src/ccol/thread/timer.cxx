@@ -60,6 +60,7 @@ namespace ccol
             unsigned int _reliablity = 1;
             bool _running = false;
             bool _threadRunning = true;
+            bool _changedState = false;
             void threadSpinner();
         public:
             Impl();
@@ -83,15 +84,13 @@ namespace ccol
             while (_threadRunning) {
                 {
                     std::unique_lock<std::mutex> lock( _stateLock );
-
+                    _changedState = false;
                     auto duration = _nextInterval - std::chrono::steady_clock::now() - std::chrono::milliseconds(_reliablity);
-
-                    if (!_stateChanged.wait_for(lock, duration, [this]() {
-                        return !_threadRunning;
-                    })) {
-                        if (_nextInterval > std::chrono::steady_clock::now()) { // extra check to improve accuracy.
-                            continue;
-                        }
+                    _stateChanged.wait_for(lock, duration, [this]() {
+                        return !_threadRunning || _changedState;
+                    });
+                    if (_nextInterval > std::chrono::steady_clock::now()) { // extra check to improve accuracy.
+                        continue;
                     }
                     if (!_running) {
                         _nextInterval = std::chrono::steady_clock::now() + std::chrono::hours(24);
@@ -120,6 +119,7 @@ namespace ccol
                 if (!_running) {
                     _running = true;
                 }
+                _changedState = true;
             }
             _stateChanged.notify_all();
         }
@@ -129,6 +129,7 @@ namespace ccol
             {
                 std::unique_lock<std::mutex> lock( _stateLock );
                 _reliablity = std::min(reliability,1000u);
+                _changedState = true;
             }
             _stateChanged.notify_all();
         }
@@ -138,6 +139,7 @@ namespace ccol
             {
                 std::unique_lock<std::mutex> lock( _stateLock );
                 _callBack = callback;
+                _changedState = true;
             }
             _stateChanged.notify_all();
         }
@@ -147,6 +149,7 @@ namespace ccol
             {
                 std::unique_lock<std::mutex> lock( _stateLock );
                 _callBack = std::move(callback);
+                _changedState = true;
             }
             _stateChanged.notify_all();
         }
@@ -156,7 +159,7 @@ namespace ccol
             {
                 std::unique_lock<std::mutex> lock( _stateLock );
                 _running = false;
-                _stateChanged.notify_all();
+                _changedState = true;
             }
         }
 
@@ -166,6 +169,7 @@ namespace ccol
                 std::unique_lock<std::mutex> lock( _stateLock );
                 _running = false;
                 _threadRunning = false;
+                _changedState = true;
                 _stateChanged.notify_all();
             }
             if (_thread.joinable()) {
