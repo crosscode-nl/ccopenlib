@@ -46,9 +46,11 @@ matrix:
 before_install:
     - eval "${MATRIX_EVAL}"
     - gcc -v && g++ -v && cmake --version
+    - export GTEST_COLOR=1
 script:
     - mkdir build
     - cd build
     - cmake ..
     - make
-    - make test
+    - ctest -VV
+
