@@ -45,7 +45,7 @@ If you have found any errors or improvements you'd like to share, please contact
 
 using namespace std::literals::chrono_literals;
 
-const auto interval = 100ms;
+const auto interval = 200ms;
 const unsigned int reliablity = 50;
 
 struct TimerTestContext
