@@ -2,9 +2,14 @@
 
 # Future versions
 ## Expected
-- Unit tests
-- CancellationToken & Source
-- EventQueue
+- TimerCollection 1.1.0.0
+- CancellationToken & Source 1.2.0.0
+- EventQueue 1.3.0.0
+- Cache 1.4.0.0
+- PriorityEventQueue ?
+- KeyValueStore ?
+
+# Version 1.0.0.0 (2018-01-10)
 
 ## Added
 - CHANGELOG.md added to documentation
@@ -12,7 +17,7 @@
 - Unit tests for Timer
 
 ## Fixed
-- Bug in unit_test ThreadPool
+- Bug in ThreadPool unit test
 
 # Version 0.2.0.0 (2018-01-08)
 ## Added
