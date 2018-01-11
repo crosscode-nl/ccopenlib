@@ -10,6 +10,9 @@
 - CHANGELOG.md added to documentation
 - LICENSE.md added to documentation
 
+## Fixed
+- Bug in unit_test ThreadPool
+
 # Version 0.2.0.0 (2018-01-08)
 ## Added 
 - Modified threadpool semantics
