@@ -1,8 +1,6 @@
 dist: trusty
-install: make get-deps
-langauge: 
-  - cpp
-compiler:  
+language: cpp
+compiler:
   - gcc
 matrix:
   include:
@@ -12,7 +10,7 @@ matrix:
           sources:
             - ubuntu-toolchain-r-test
           packages:
-            - g++-4.9            
+            - g++-4.9
       env:
          - MATRIX_EVAL="CC=gcc-4.9 && CXX=g++-4.9"
     - os: linux
@@ -47,4 +45,10 @@ matrix:
         - MATRIX_EVAL="CC=gcc-7 && CXX=g++-7"
 before_install:
     - eval "${MATRIX_EVAL}"
-    - gcc -v && g++ -v && cmake --version    
+    - gcc -v && g++ -v && cmake --version
+script:
+    - md build
+    - cd build
+    - cmake ..
+    - make
+    - make test
