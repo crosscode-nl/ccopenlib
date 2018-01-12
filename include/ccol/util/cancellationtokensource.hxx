@@ -35,11 +35,50 @@
 */
 #ifndef COLL_UTIL_CANCELLATIONTOKENSOURCE_HXX
 #define COLL_UTIL_CANCELLATIONTOKENSOURCE_HXX
+#include <memory>
+#include <ccol/util/cancellationtoken.hxx>
 
 namespace ccol
 {
     namespace util
     {
+        /**
+         * \brief A CancellationTokenSource can create tokens and cancel those tokens.
+         */
+        class CancellationTokenSource
+        {
+        private:
+            class Impl;
+            std::unique_ptr<Impl> _impl;
+        private:
+        public:
+            /**
+             * @brief CancellationTokenSource constructor
+             */
+            CancellationTokenSource();
+
+            /**
+             * \brief Cancel all tokens.
+             *
+             * See https://gcc.gnu.org/wiki/Atomic/GCCMM/AtomicSync for more information about memory order.
+             *
+             * \param memoryOrder Memory order to use when checking cancellation variable.
+             */
+            void cancel(const std::memory_order &memoryOrder = std::memory_order_seq_cst);
+
+            /**
+             * @brief Creates and returns a CancellationToken.
+             * @return A CancellationToken
+             */
+            std::unique_ptr<CancellationToken> token();
+
+            /**
+             * @brief CancellationTokenSource destructor.
+             *
+             * Destructing the CancellationTokenSource will cancel all tokens.
+             */
+            virtual ~CancellationTokenSource();
+        };
     }
 }
 

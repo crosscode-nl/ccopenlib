@@ -43,7 +43,7 @@ namespace ccol
     namespace util
     {
         /**
-         * \brief A canncellationToken can be checked for cacellations.
+         * \brief A CancellationToken can be checked for cancellations.
          */
         class CancellationToken
         {
@@ -51,9 +51,16 @@ namespace ccol
             class Impl;
             std::unique_ptr<Impl> _impl;
         private:
-            friend class CancellationTokenSource;
-            CancellationToken(const std::shared_ptr<std::atomic_bool> &cancellationVariable);
         public:
+            /**
+             * @brief CancellationToken constructor
+             *
+             * Use a CancellationTokenSource to create an CancellationToken.
+             *
+             * @param cancellationVariable
+             */
+            CancellationToken(const std::shared_ptr<std::atomic_bool> &cancellationVariable);
+
             /**
              * \brief Check if cancellationToken is cancelled.
              *

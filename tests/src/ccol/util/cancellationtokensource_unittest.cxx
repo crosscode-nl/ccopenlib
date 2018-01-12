@@ -34,54 +34,32 @@ If you'd like to modify and/or share this code, share it under the same license,
 If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
 #include <ccol/util/cancellationtokensource.hxx>
-#include <memory>
+#include "gtest/gtest.h"
 
-namespace ccol
+TEST(CancellationTokenSource, TestCancellation)
 {
-    namespace util
-    {
-        class CancellationTokenSource::Impl
-        {
-            public:
-            std::shared_ptr<std::atomic_bool> _cancellationVariable;
-            void cancel(const std::memory_order &memoryOrder = std::memory_order_seq_cst);
-            std::unique_ptr<CancellationToken> token();
-            Impl();
-        };
-
-        void CancellationTokenSource::Impl::cancel(const std::memory_order &memoryOrder)
-        {
-            _cancellationVariable->store(true,memoryOrder);
-        }
-
-        std::unique_ptr<CancellationToken> CancellationTokenSource::Impl::token()
-        {
-            return std::make_unique<CancellationToken>(_cancellationVariable);
-        }
-
-        CancellationTokenSource::Impl::Impl()
-            : _cancellationVariable(std::make_shared<std::atomic_bool>(false))
-        {
-        }
-
-        CancellationTokenSource::CancellationTokenSource()
-            : _impl(std::make_unique<Impl>())
-        {
-        }
-
-        void CancellationTokenSource::cancel(const std::memory_order &memoryOrder)
-        {
-            _impl->cancel(memoryOrder);
-        }
-
-        std::unique_ptr<CancellationToken> CancellationTokenSource::token()
-        {
-            return _impl->token();
-        }
-
-        CancellationTokenSource::~CancellationTokenSource()
-        {
-            cancel();
-        }
-    }
+    ccol::util::CancellationTokenSource cts;
+    auto t1 = cts.token();
+    auto t2 = cts.token();
+    EXPECT_FALSE(t1->isCancelled());
+    EXPECT_FALSE(t2->isCancelled());
+    cts.cancel();
+    EXPECT_TRUE(t1->isCancelled());
+    EXPECT_TRUE(t2->isCancelled());
 }
+
+TEST(CancellationTokenSource, TestCancellationOnDestruct)
+{
+    std::unique_ptr<ccol::util::CancellationToken> t1;
+    std::unique_ptr<ccol::util::CancellationToken> t2;
+    {
+        ccol::util::CancellationTokenSource cts;
+        t1 = cts.token();
+        t2 = cts.token();
+        EXPECT_FALSE(t1->isCancelled());
+        EXPECT_FALSE(t2->isCancelled());
+    }
+    EXPECT_TRUE(t1->isCancelled());
+    EXPECT_TRUE(t2->isCancelled());
+}
+
