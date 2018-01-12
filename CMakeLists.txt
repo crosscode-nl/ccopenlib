@@ -9,7 +9,7 @@ project (
 include(CTest)
 enable_testing()
 
-set(BUILD_QUALITY "Release")
+set(BUILD_QUALITY "Alpha")
 set(ABIVERSION 1.1.0.0)
 
 SET(HEADERS
@@ -18,12 +18,16 @@ SET(HEADERS
         include/ccol/thread/thread_wrap.hxx
         include/ccol/version/version.hxx
         include/ccol/util/always_false.hxx
+        include/ccol/util/cancellationtoken.hxx
+        include/ccol/util/cancellationtokensource.hxx
 )
 
 SET(SOURCES
         src/ccol/thread/threadpool.cxx
         src/ccol/thread/timer.cxx
         src/ccol/thread/thread_wrap.cxx
+        src/ccol/util/cancellationtoken.cxx
+        src/ccol/util/cancellationtokensource.cxx
 )
 
 string(TIMESTAMP BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
