@@ -10,6 +10,7 @@ SET(HEADERS
 SET(SOURCES
     src/ccol/thread/threadpool_unittest.cxx
     src/ccol/thread/timer_unittest.cxx
+    src/ccol/thread/thread_wrap_unittest.cxx
     src/ccol/util/cancellationtokensource_unittest.cxx
 )
 
