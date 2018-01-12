@@ -210,6 +210,34 @@ namespace ccol
         }
 
         /**
+         * \brief Gets the ABI version of this library as a const char pointer.
+         *
+         * The version format adheres CMAKE semantics.
+         *
+         * https://cmake.org/cmake/help/v3.0/variable/CMAKE_VERSION.html
+         *
+         * \return Returns a const char pointer to version of this library.
+         */
+        const char* abiversion_cstr()
+        {
+            return "@ABIVERSION@";
+        }
+
+        /**
+         * \brief Gets the ABI version of this library as a std::string.
+         *
+         * The version format adheres CMAKE semantics.
+         *
+         * https://cmake.org/cmake/help/v3.0/variable/CMAKE_VERSION.html
+         *
+         * \return Returns a std::string pointer to version of this library.
+         */
+        std::string abiversion()
+        {
+            return abiversion_cstr();
+        }
+
+        /**
          * \brief Gets the version of this library as a const char pointer.
          *
          * The version format adheres CMAKE semantics.
