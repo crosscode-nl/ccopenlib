@@ -41,6 +41,7 @@ If you have found any errors or improvements you'd like to share, please contact
 #include <queue>
 #include <functional>
 #include <chrono>
+#include <thread>
 
 namespace ccol
 {
@@ -70,6 +71,22 @@ namespace ccol
             /** \brief Default constructor */
             Timer();
 
+            /** \brief Constructor that accepts a threadCreateCallback by const reference.
+             *
+             * This constructor allow you to access the std::thread on creation.
+             *
+             * \param threadCreateCallback Callback that allow you to perform operations on the std::thread when it is created.
+             */
+            Timer(const std::function<void(std::thread&)> &threadCreateCallback);
+
+            /** \brief Constructor that accepts a threadCreateCallback using move semantics.
+             *
+             * This constructor allow you to access the std::thread on creation.
+             *
+             * \param threadCreateCallback Callback that allow you to perform operations on the std::thread when it is created.
+             */
+            Timer(const std::function<void(std::thread&)> &&threadCreateCallback);
+
             /** \brief Constructor that accepts a callback by const reference.
              *
              * \param callback The const reference of the callback.
@@ -81,7 +98,6 @@ namespace ccol
              * \param callback The move assignment of the callback.
              */
             Timer(std::function<void()> &&callback);
-
 
             /** \brief Sets the reliablity of the timer
              *

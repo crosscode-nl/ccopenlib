@@ -63,7 +63,7 @@ namespace ccol
             bool _changedState = false;
             void threadSpinner();
         public:
-            Impl();
+            Impl(const std::function<void (std::thread &)> &threadCreateCallback = nullptr);
             void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
             void setReliability(const unsigned int &reliability);
             void setCallback(const std::function<void()> &callback);
@@ -73,9 +73,12 @@ namespace ccol
             ~Impl();
         };
 
-        Timer::Impl::Impl()
+        Timer::Impl::Impl(const std::function<void (std::thread &)> &threadCreateCallback)
         {
             _thread = std::thread(&Timer::Impl::threadSpinner, this);
+            if (threadCreateCallback!=nullptr) {
+                threadCreateCallback(_thread);
+            }
         }
 
         void Timer::Impl::threadSpinner()
@@ -185,6 +188,18 @@ namespace ccol
         Timer::Timer()
             : _impl(std::make_unique<Impl>())
         {
+        }
+
+        Timer::Timer(const std::function<void (std::thread &)> &threadCreateCallback)
+            : _impl(std::make_unique<Impl>(threadCreateCallback))
+        {
+
+        }
+
+        Timer::Timer(const std::function<void (std::thread &)> &&threadCreateCallback)
+            : _impl(std::make_unique<Impl>(std::move(threadCreateCallback)))
+        {
+
         }
 
         Timer::Timer(const std::function<void()> &callback)
