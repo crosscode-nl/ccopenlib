@@ -18,7 +18,7 @@ I provide this to the world under an MIT license as an appreciation to other lib
 
 ## EXAMPLES
 
-Examples are found in the documentation or in EXAMPLES.md files in the include folder structure. 
+Examples are found in the documentation or in EXAMPLES.md files in the include folder structure.
 
 ## URLS
 
@@ -32,11 +32,11 @@ Examples are found in the documentation or in EXAMPLES.md files in the include f
 
 ## VERSIONING
 
-When you decide to use a dynamic library, which is currently not supported, keep the following in mind:
+When you decide to use this project as a dynamic library, which is currently not supported, keep the following in mind:
 
 Odd major versions will not guarantee ABI compatibility. So 1.2.0.0 might not be ABI compatible with 1.1.0.0.
 
-Even major version will guarantee ABI compatibility. So 2.2.0.0 will be ABI compatible with 2.1.0.0.
+Even major versions will guarantee ABI compatibility. So 2.2.0.0 will be ABI compatible with 2.1.0.0.
 
 ## LICENSE
 SPDX-License-Identifier: MIT
