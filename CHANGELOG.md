@@ -1,13 +1,23 @@
-# Changelog {#changelog}
+# Changelog
 
 # Future versions
 ## Expected
-- TimerCollection 1.1.0.0
-- CancellationToken & Source 1.2.0.0
-- EventQueue 1.3.0.0
+- TimerCollection 1.2.0.0
+- CancellationToken & Source 1.3.0.0
+- EventQueue 1.4.0.0
 - Cache 1.4.0.0
 - PriorityEventQueue ?
 - KeyValueStore ?
+
+# Version 1.1.0.0 (2018-01-12)
+
+## Added
+
+- Updated and added documentation
+- Added constructor to Timer to allow std::thread access.
+
+## Fixed
+- Updated Alpha to Release.
 
 # Version 1.0.0.0 (2018-01-10)
 

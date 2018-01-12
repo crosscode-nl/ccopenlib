@@ -1,4 +1,4 @@
-# Thread Examples {#threadexamples}
+# Thread Examples
 
 ## ThreadPool
 
@@ -111,9 +111,9 @@ ccol::thread::Timer timer([]{
 timer.start(0ms, 500ms); // fire after 500 milliseconds
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Stop a timer. 
+Stop a timer.
 
-A timer can be stopped and restarted by using start or startSingleshot everytime. Stop is not required betweeen those calls. 
+A timer can be stopped and restarted by using start or startSingleshot everytime. Stop is not required betweeen those calls.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 ccol::thread::Timer timer([]{
@@ -123,7 +123,7 @@ ccol::thread::Timer timer([]{
 timer.start(0ms, 500ms); // fire after 500 milliseconds
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Change or set a callback. The callback can be changed at any time. 
+Change or set a callback. The callback can be changed at any time.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 ccol::thread::Timer timer();

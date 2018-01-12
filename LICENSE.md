@@ -1,6 +1,6 @@
-# License {license}
+# License
 
-SPDX-License-Identifier: MIT    
+SPDX-License-Identifier: MIT
 
 © 2017 CrossCode / Patrick Vollebregt - All rights reserved
 
