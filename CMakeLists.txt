@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.9.0)
 project (
     CCOPENLIB
-    VERSION 1.0.0.0
+    VERSION 1.1.0.0
     DESCRIPTION "CCOPENLIB is a free open source library for C++14 that provides commonly needed patterns."
     LANGUAGES CXX
 )
@@ -9,7 +9,8 @@ project (
 include(CTest)
 enable_testing()
 
-set(BUILD_QUALITY "Alpha")
+set(BUILD_QUALITY "Release")
+set(ABIVERSION 1.1.0.0)
 
 SET(HEADERS
         include/ccol/thread/threadpool.hxx
@@ -35,6 +36,11 @@ target_include_directories(ccopenlib PUBLIC include)
 
 set_property(TARGET ccopenlib PROPERTY PUBLIC_HEADER ${HEADERS})
 set_property(TARGET ccopenlib PROPERTY CXX_STANDARD 14)
+
+set_target_properties(ccopenlib
+      PROPERTIES VERSION ${PROJECT_VERSION}
+      SOVERSION ${ABIVERSION}
+)
 
 include(documentation.cmake)
 

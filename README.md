@@ -18,13 +18,7 @@ I provide this to the world under an MIT license as an appreciation to other lib
 
 ## EXAMPLES
 
-Timer and ThreadPool examples are found here.
-
-[Thread namespace examples](https://github.com/crosscode-nl/ccopenlib/blob/master/include/ccol/thread/EXAMPLES.md)
-
-Version namespace examples are found here.
-
-[Version namespace examples](https://github.com/crosscode-nl/ccopenlib/blob/master/include/ccol/version/EXAMPLES.md)
+Examples are found in the documentation or in EXAMPLES.md files in the include folder structure. 
 
 ## URLS
 
