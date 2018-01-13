@@ -118,7 +118,7 @@ TEST(EventQueue, QueueLimitTest)
     FAIL();
 }
 
-TEST(EventQueue, QueueLimitTest)
+TEST(EventQueue, EventsAsVectorTest)
 {
     FAIL();
 }
