@@ -3,7 +3,6 @@
 # Future versions
 ## Expected
 - TimerCollection 1.2.0.0
-- CancellationToken & Source 1.3.0.0
 - EventQueue 1.4.0.0
 - Cache 1.4.0.0
 - PriorityEventQueue ?
