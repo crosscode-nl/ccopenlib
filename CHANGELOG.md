@@ -9,6 +9,11 @@
 - PriorityEventQueue ?
 - KeyValueStore ?
 
+## Version 1.2.0.0 (2018-???)
+
+## Added
+- CancellationTokenSource & CancellationToken
+
 # Version 1.1.0.0 (2018-01-12)
 
 ## Added
