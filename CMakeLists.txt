@@ -20,6 +20,7 @@ SET(HEADERS
         include/ccol/util/always_false.hxx
         include/ccol/util/cancellationtoken.hxx
         include/ccol/util/cancellationtokensource.hxx
+        include/ccol/event/baseevent.hxx
 )
 
 SET(SOURCES
