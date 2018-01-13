@@ -24,6 +24,7 @@ SET(HEADERS
         include/ccol/event/callbackevent.hxx
         include/ccol/event/dataevent.hxx
         include/ccol/event/eventqueue.hxx
+        include/ccol/event/callbackeventqueue.hxx
 )
 
 SET(SOURCES
@@ -35,6 +36,7 @@ SET(SOURCES
         src/ccol/event/baseevent.cxx
         src/ccol/event/callbackevent.cxx
         src/ccol/event/eventqueue.cxx
+        src/ccol/event/callbackeventqueue.cxx
 )
 
 string(TIMESTAMP BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)

@@ -13,6 +13,7 @@ SET(SOURCES
     src/ccol/thread/thread_wrap_unittest.cxx
     src/ccol/util/cancellationtokensource_unittest.cxx
     src/ccol/event/eventqueue_unittest.cxx
+    src/ccol/event/callbackeventqueue_unittest.cxx
 )
 
 add_subdirectory(googletest)
