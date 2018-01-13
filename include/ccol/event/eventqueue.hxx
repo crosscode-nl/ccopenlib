@@ -44,7 +44,7 @@
 
 
 namespace ccol {
-    namespace util {
+    namespace event {
 
         class EventQueue
         {

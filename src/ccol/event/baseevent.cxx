@@ -33,33 +33,13 @@ If you'd like to modify and/or share this code, share it under the same license,
 
 If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#include <ccol/event/callbackevent.hxx>
+#include <ccol/event/baseevent.hxx>
 
 namespace ccol {
 
-    namespace event {
+namespace event {
 
-
-        CallbackEvent::CallbackEvent(const std::function<void ()> &callback)
-            : _callback(callback)
-        {
-
-        }
-
-        CallbackEvent::CallbackEvent(std::function<void ()> &&callback)
-            : _callback(std::move(callback))
-        {
-
-        }
-
-        void CallbackEvent::invoke()
-        {
-            if (_callback!=nullptr) {
-                _callback();
-            }
-        }
-
-        CallbackEvent::~CallbackEvent()
+        BaseEvent::~BaseEvent()
         {
 
         }

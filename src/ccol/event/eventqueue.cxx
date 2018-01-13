@@ -42,7 +42,7 @@ If you have found any errors or improvements you'd like to share, please contact
 
 namespace ccol {
 
-    namespace util {
+    namespace event {
 
         class EventQueue::Impl
         {

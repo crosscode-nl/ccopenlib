@@ -32,6 +32,7 @@ SET(SOURCES
         src/ccol/thread/thread_wrap.cxx
         src/ccol/util/cancellationtoken.cxx
         src/ccol/util/cancellationtokensource.cxx
+        src/ccol/event/baseevent.cxx
         src/ccol/event/callbackevent.cxx
         src/ccol/event/eventqueue.cxx
 )

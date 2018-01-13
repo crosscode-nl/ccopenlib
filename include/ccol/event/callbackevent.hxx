@@ -41,7 +41,7 @@
 
 namespace ccol {
 
-    namespace util {
+    namespace event {
 
         /**
          * @brief The CallbackEvent class allows a lambda function to be submitted to the EventQueue.
@@ -49,7 +49,7 @@ namespace ccol {
          * event queue that is than executed on the thread that is
          * processing the event queue.
          */
-        class CallbackEvent : BaseEvent
+        class CallbackEvent : public BaseEvent
         {
             private:
             std::function<void()> _callback;
@@ -69,6 +69,8 @@ namespace ccol {
              * @brief Invoked the lambda function.
              */
             void invoke();
+
+            virtual ~CallbackEvent();
         };
 
     }

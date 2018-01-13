@@ -42,7 +42,7 @@
 
 namespace ccol {
 
-    namespace util {
+    namespace event {
 
         /**
          * @brief The DataEvent class

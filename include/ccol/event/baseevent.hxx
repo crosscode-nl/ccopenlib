@@ -37,7 +37,8 @@
 #define CCOL_EVENT_BASEEVENT_HXX
 
 namespace ccol {
-    namespace util {
+
+    namespace event {
 
         /**
          * @brief The BaseEvent class
@@ -46,7 +47,7 @@ namespace ccol {
         class BaseEvent
         {
         public:
-            virtual ~BaseEvent()=0;
+            virtual ~BaseEvent();
         };
 
     }
