@@ -70,7 +70,7 @@ namespace ccol
              * @brief Creates and returns a CancellationToken.
              * @return A CancellationToken
              */
-            std::unique_ptr<CancellationToken> token();
+            CancellationToken token();
 
             /**
              * @brief CancellationTokenSource destructor.

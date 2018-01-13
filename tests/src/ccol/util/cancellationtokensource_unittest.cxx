@@ -41,25 +41,27 @@ TEST(CancellationTokenSource, TestCancellation)
     ccol::util::CancellationTokenSource cts;
     auto t1 = cts.token();
     auto t2 = cts.token();
-    EXPECT_FALSE(t1->isCancelled());
-    EXPECT_FALSE(t2->isCancelled());
+    EXPECT_FALSE(t1.isCancelled());
+    EXPECT_FALSE(t2.isCancelled());
     cts.cancel();
-    EXPECT_TRUE(t1->isCancelled());
-    EXPECT_TRUE(t2->isCancelled());
+    EXPECT_TRUE(t1.isCancelled());
+    EXPECT_TRUE(t2.isCancelled());
 }
 
 TEST(CancellationTokenSource, TestCancellationOnDestruct)
 {
-    std::unique_ptr<ccol::util::CancellationToken> t1;
-    std::unique_ptr<ccol::util::CancellationToken> t2;
+    ccol::util::CancellationToken t1;
+    ccol::util::CancellationToken t2;
+    EXPECT_TRUE(t1.isCancelled());
+    EXPECT_TRUE(t2.isCancelled());
     {
         ccol::util::CancellationTokenSource cts;
         t1 = cts.token();
         t2 = cts.token();
-        EXPECT_FALSE(t1->isCancelled());
-        EXPECT_FALSE(t2->isCancelled());
+        EXPECT_FALSE(t1.isCancelled());
+        EXPECT_FALSE(t2.isCancelled());
     }
-    EXPECT_TRUE(t1->isCancelled());
-    EXPECT_TRUE(t2->isCancelled());
+    EXPECT_TRUE(t1.isCancelled());
+    EXPECT_TRUE(t2.isCancelled());
 }
 

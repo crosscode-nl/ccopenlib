@@ -45,7 +45,7 @@ namespace ccol
             public:
             std::shared_ptr<std::atomic_bool> _cancellationVariable;
             void cancel(const std::memory_order &memoryOrder = std::memory_order_seq_cst);
-            std::unique_ptr<CancellationToken> token();
+            CancellationToken token();
             Impl();
         };
 
@@ -54,9 +54,9 @@ namespace ccol
             _cancellationVariable->store(true,memoryOrder);
         }
 
-        std::unique_ptr<CancellationToken> CancellationTokenSource::Impl::token()
+        CancellationToken CancellationTokenSource::Impl::token()
         {
-            return std::make_unique<CancellationToken>(_cancellationVariable);
+            return CancellationToken(_cancellationVariable);
         }
 
         CancellationTokenSource::Impl::Impl()
@@ -74,7 +74,7 @@ namespace ccol
             _impl->cancel(memoryOrder);
         }
 
-        std::unique_ptr<CancellationToken> CancellationTokenSource::token()
+        CancellationToken CancellationTokenSource::token()
         {
             return _impl->token();
         }

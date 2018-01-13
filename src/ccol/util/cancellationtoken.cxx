@@ -41,33 +41,15 @@ namespace ccol
     namespace util
     {
 
-        class CancellationToken::Impl
-        {
-            private:
-            std::shared_ptr<std::atomic_bool> _cancellationVariable;
-            public:
-            Impl(const std::shared_ptr<std::atomic_bool> &cancellationVariable);
-            bool isCancelled(const std::memory_order &memoryOrder);
-        };
-
-        CancellationToken::Impl::Impl(const std::shared_ptr<std::atomic_bool> &cancellationVariable)
-            : _cancellationVariable(cancellationVariable)
-        {
-        }
-
-        bool CancellationToken::Impl::isCancelled(const std::memory_order &memoryOrder)
-        {
-            return _cancellationVariable->load(memoryOrder);
-        }
-
         CancellationToken::CancellationToken(const std::shared_ptr<std::atomic_bool> &cancellationVariable)
-            : _impl(std::make_unique<Impl>(cancellationVariable))
+            : _cancellationVariable(cancellationVariable)
         {
         }
 
         bool CancellationToken::isCancelled(const std::memory_order &memoryOrder)
         {
-            return _impl->isCancelled(memoryOrder);
+            if (_cancellationVariable==nullptr) return true;
+            return _cancellationVariable->load(memoryOrder);
         }
 
         CancellationToken::~CancellationToken()

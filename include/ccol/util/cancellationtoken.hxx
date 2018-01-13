@@ -48,10 +48,15 @@ namespace ccol
         class CancellationToken
         {
         private:
-            class Impl;
-            std::unique_ptr<Impl> _impl;
-        private:
+            std::shared_ptr<std::atomic_bool> _cancellationVariable;
         public:
+            /**
+             * @brief Default cancellationToken constructor
+             *
+             * Use a CancellationTokenSource to create an CancellationToken.
+             */
+            CancellationToken() = default;
+
             /**
              * @brief CancellationToken constructor
              *
