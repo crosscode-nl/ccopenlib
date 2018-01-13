@@ -33,46 +33,42 @@
 
     If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#ifndef CCOL_EVENT_CALLBACKEVENT_HXX
-#define CCOL_EVENT_CALLBACKEVENT_HXX
-
+#ifndef CCOL_EVENT_EVENTQUEUE_HXX
+#define CCOL_EVENT_EVENTQUEUE_HXX
 #include <ccol/event/baseevent.hxx>
 #include <functional>
+#include <utility>
+#include <vector>
+#include <memory>
+#include <typeinfo>
+
 
 namespace ccol {
-
     namespace util {
 
-        /**
-         * @brief The CallbackEvent class allows a lambda function to be submitted to the EventQueue.
-         * The callback event class allows a lambda function to be posted to an
-         * event queue that is than executed on the thread that is
-         * processing the event queue.
-         */
-        class CallbackEvent : BaseEvent
+        class EventQueue
         {
             private:
-            std::function<void()> _callback;
+            class Impl;
+            std::unique_ptr<Impl> _impl;
             public:
-            /**
-             * @brief Constructor CallbackEvent that takes a lambda function.
-             * @param callback The callback to be invoked by the thread processing the EventQueue.
-             */
-            CallbackEvent(const std::function<void()> &callback);
-            /**
-             * @brief Constructor CallbackEvent that takes a lambda function using move semantics.
-             * @param callback The callback to be invoked by the thread processing the EventQueue.
-             */
-            CallbackEvent(std::function<void()> &&callback);
-
-            /**
-             * @brief Invoked the lambda function.
-             */
-            void invoke();
+            typedef std::shared_ptr<BaseEvent> event_type;
+            typedef std::function<void(event_type&&)> callback_type;
+            typedef std::vector<std::pair<std::type_info,callback_type>> callback_vector_type;
+            EventQueue();
+            EventQueue(const std::size_t &maxQueueSize);
+            bool enqueue(const event_type &event);
+            bool enqueue(event_type &&event);
+            void setCallbackForType(const std::type_info &type, const callback_type &callback);
+            void setCallbackForType(const std::type_info &type, callback_type &&callback);
+            void setCallbacks(const callback_vector_type &callbacks);
+            void setCallbacks(callback_vector_type &&callbacks);
+            void run();
+            bool isRunning();
+            void stop();
+            virtual ~EventQueue();
         };
 
     }
-
 }
-
-#endif // CCOL_EVENT_CALLBACKEVENT_HXX
+#endif

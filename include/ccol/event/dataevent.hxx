@@ -33,8 +33,8 @@
 
     If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#ifndef COLL_EVENT_DATAEVENT_HXX
-#define COLL_EVENT_DATAEVENT_HXX
+#ifndef CCOL_EVENT_DATAEVENT_HXX
+#define CCOL_EVENT_DATAEVENT_HXX
 
 #include <ccol/event/baseevent.hxx>
 #include <utility>
@@ -137,4 +137,4 @@ namespace ccol {
 
 }
 
-#endif // COLL_EVENT_CALLBACKEVENT_HXX
+#endif // CCOL_EVENT_CALLBACKEVENT_HXX

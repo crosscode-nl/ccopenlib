@@ -33,8 +33,8 @@
 
     If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#ifndef COLL_EVENT_BASEEVENT_HXX
-#define COLL_EVENT_BASEEVENT_HXX
+#ifndef CCOL_EVENT_BASEEVENT_HXX
+#define CCOL_EVENT_BASEEVENT_HXX
 
 namespace ccol {
     namespace util {

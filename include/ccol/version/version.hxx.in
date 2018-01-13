@@ -1,5 +1,5 @@
-#ifndef COLL_VERSION_VERSION_HXX
-#define COLL_VERSION_VERSION_HXX
+#ifndef CCOL_VERSION_VERSION_HXX
+#define CCOL_VERSION_VERSION_HXX
 #include <string>
 
 namespace ccol
