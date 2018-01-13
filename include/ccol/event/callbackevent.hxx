@@ -33,22 +33,46 @@
 
     If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#ifndef COLL_EVENT_BASEEVENT_HXX
-#define COLL_EVENT_BASEEVENT_HXX
+#ifndef COLL_EVENT_CALLBACKEVENT_HXX
+#define COLL_EVENT_CALLBACKEVENT_HXX
+
+#include <ccol/event/baseevent.hxx>
+#include <functional>
 
 namespace ccol {
+
     namespace util {
 
         /**
-         * @brief The BaseEvent class
-         * This is the base class of all events.
+         * @brief The CallbackEvent class allows a lambda function to be submitted to the EventQueue.
+         * The callback event class allows a lambda function to be posted to an
+         * event queue that is than executed on the thread that is
+         * processing the event queue.
          */
-        class BaseEvent
+        class CallbackEvent : BaseEvent
         {
-        public:
-            virtual ~BaseEvent()=0;
+            private:
+            std::function<void()> _callback;
+            public:
+            /**
+             * @brief Constructor CallbackEvent that takes a lambda function.
+             * @param callback The callback to be invoked by the thread processing the EventQueue.
+             */
+            CallbackEvent(const std::function<void()> &callback);
+            /**
+             * @brief Constructor CallbackEvent that takes a lambda function using move semantics.
+             * @param callback The callback to be invoked by the thread processing the EventQueue.
+             */
+            CallbackEvent(std::function<void()> &&callback);
+
+            /**
+             * @brief Invoked the lambda function.
+             */
+            void invoke();
         };
 
     }
+
 }
-#endif
+
+#endif // COLL_EVENT_CALLBACKEVENT_HXX

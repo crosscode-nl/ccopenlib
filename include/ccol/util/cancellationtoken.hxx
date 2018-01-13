@@ -33,8 +33,8 @@
 
     If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
-#ifndef CANCELLATIONTOKEN_HXX
-#define CANCELLATIONTOKEN_HXX
+#ifndef COLL_UTIL_CANCELLATIONTOKEN_HXX
+#define COLL_UTIL_CANCELLATIONTOKEN_HXX
 #include <atomic>
 #include <memory>
 
@@ -81,4 +81,4 @@ namespace ccol
 }
 
 
-#endif // CANCELLATIONTOKEN_HXX
+#endif // COLL_UTIL_CANCELLATIONTOKEN_HXX
