@@ -57,8 +57,8 @@ namespace ccol {
             Impl(const std::size_t &maxQueueSize);
             bool enqueue(const event_type &event);
             bool enqueue(event_type &&event);
-            void setCallbackForType(const std::type_info &type, const callback_type &callback);
-            void setCallbackForType(const std::type_info &type, callback_type &&callback);
+            void setCallbackForType(const std::type_index &type, const callback_type &callback);
+            void setCallbackForType(const std::type_index &type, callback_type &&callback);
             void setCallbacks(const callback_vector_type &callbacks);
             void setCallbacks(callback_vector_type &&callbacks);
             void run();
@@ -94,13 +94,13 @@ namespace ccol {
             return true;
         }
 
-        void EventQueue::Impl::setCallbackForType(const std::type_info &type, const callback_type &callback)
+        void EventQueue::Impl::setCallbackForType(const std::type_index &type, const callback_type &callback)
         {
             std::unique_lock<std::mutex> lock(_stateMutex);
             _callbacks[type] = callback;
         }
 
-        void EventQueue::Impl::setCallbackForType(const std::type_info &type, callback_type &&callback)
+        void EventQueue::Impl::setCallbackForType(const std::type_index &type, callback_type &&callback)
         {
             std::unique_lock<std::mutex> lock(_stateMutex);
             _callbacks[type] = std::move(callback);
@@ -110,7 +110,7 @@ namespace ccol {
         {
             std::unique_lock<std::mutex> lock(_stateMutex);
             for (const auto &typeAndCallback : callbacks) {
-                setCallbackForType(typeAndCallback.first,typeAndCallback.second);
+                _callbacks[typeAndCallback.first] = typeAndCallback.second;
             }
         }
 
@@ -118,7 +118,7 @@ namespace ccol {
         {
             std::unique_lock<std::mutex> lock(_stateMutex);
             for (const auto &typeAndCallback : callbacks) {
-                setCallbackForType(typeAndCallback.first,std::move(typeAndCallback.second));
+                _callbacks[typeAndCallback.first] = std::move(typeAndCallback.second);
             }
         }
 
@@ -138,7 +138,7 @@ namespace ccol {
                      if (_events.size()>0) {
                         event = _events.front();
                         _events.pop();
-                        auto callbackIterator = _callbacks.find(std::type_index(typeid(*event)));
+                        auto callbackIterator = _callbacks.find(typeid(*event));
                         if (callbackIterator!=_callbacks.end()) {
                             callback = callbackIterator->second;
                         }
@@ -185,12 +185,12 @@ namespace ccol {
             return _impl->enqueue(std::move(event));
         }
 
-        void EventQueue::setCallbackForType(const std::type_info &type, const callback_type &callback)
+        void EventQueue::setCallbackForType(const std::type_index &type, const callback_type &callback)
         {
             _impl->setCallbackForType(type,callback);
         }
 
-        void EventQueue::setCallbackForType(const std::type_info &type, callback_type &&callback)
+        void EventQueue::setCallbackForType(const std::type_index &type, callback_type &&callback)
         {
             _impl->setCallbackForType(type,std::move(callback));
         }

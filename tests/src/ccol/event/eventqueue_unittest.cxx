@@ -36,6 +36,7 @@ If you have found any errors or improvements you'd like to share, please contact
 #include <ccol/event/eventqueue.hxx>
 #include <ccol/event/callbackevent.hxx>
 #include <ccol/event/dataevent.hxx>
+#include <typeindex>
 #include "gtest/gtest.h"
 
 TEST(EventQueue, EventQueueCallbackTest)
@@ -115,12 +116,102 @@ TEST(EventQueue, EventQueueDataCallbackTest)
 
 TEST(EventQueue, QueueLimitTest)
 {
-    FAIL();
+    ccol::event::EventQueue queue(3);
+    int count = 0;
+    queue.setCallbackForType( typeid(ccol::event::CallbackEvent), [&queue](ccol::event::EventQueue::event_type &&event){
+        auto callbackEvent = std::dynamic_pointer_cast<ccol::event::CallbackEvent>(event);
+        if (callbackEvent!=nullptr) {
+            callbackEvent->invoke();
+        } else {
+            queue.stop();
+        }
+    });
+    EXPECT_TRUE(queue.enqueue(std::make_shared<ccol::event::CallbackEvent>([&queue, &count]{
+        count++; // 1
+        queue.enqueue(std::make_shared<ccol::event::CallbackEvent>([&queue, &count]{ queue.stop(); })); // placed at the back of the queue, causing the EventQueue to stop.
+    })));
+    EXPECT_TRUE(queue.enqueue(std::make_shared<ccol::event::CallbackEvent>([&queue, &count]{ count++; }))); // 2
+    EXPECT_TRUE(queue.enqueue(std::make_shared<ccol::event::CallbackEvent>([&queue, &count]{ count++; }))); // 3
+    EXPECT_FALSE(queue.enqueue(std::make_shared<ccol::event::CallbackEvent>([&queue, &count]{ count++; }))); // 3 this one should not be executed.
+    queue.run();
+    EXPECT_EQ(3,count);
 }
 
 TEST(EventQueue, EventsAsVectorTest)
 {
-    FAIL();
+    ccol::event::EventQueue queue;
+    bool intCallbackCalled = false;
+    bool longCallbackCalled = false;
+    bool callbackCalled = false;
+
+    typedef ccol::event::StaticDataEvent<int> IntEvent;
+    typedef ccol::event::SharedDataEvent<long> SharedLongEvent;
+    queue.setCallbacks(
+    {
+            {
+                typeid(ccol::event::CallbackEvent),
+                [&queue](ccol::event::EventQueue::event_type &&event){
+                    auto callbackEvent = std::dynamic_pointer_cast<ccol::event::CallbackEvent>(event);
+                    if (callbackEvent!=nullptr) {
+                        callbackEvent->invoke();
+                    } else {
+                        queue.stop();
+                    }
+                }
+            },
+            {
+                typeid(IntEvent),
+                [&queue,&intCallbackCalled](ccol::event::EventQueue::event_type &&event){
+                    auto dataEvent = std::dynamic_pointer_cast<IntEvent>(event);
+                    if (dataEvent!=nullptr) {
+                        EXPECT_EQ(-10,dataEvent->dataRef());
+                        EXPECT_EQ(-10,dataEvent->dataCopy());
+                        intCallbackCalled = true;
+                    } else {
+                        queue.stop();
+                    }
+                }
+            },
+            {
+                typeid(SharedLongEvent),
+                [&queue,&longCallbackCalled](ccol::event::EventQueue::event_type &&event){
+
+                    auto dataEvent = std::dynamic_pointer_cast<SharedLongEvent>(event);
+                    if (dataEvent!=nullptr) {
+                        EXPECT_EQ(18,*dataEvent->dataRef());
+                        EXPECT_EQ(18,*dataEvent->dataCopy());
+                        longCallbackCalled = true;
+                    } else {
+                        queue.stop();
+                    }
+                }
+            }
+    });
+
+
+
+    queue.setCallbackForType(typeid(SharedLongEvent),[&queue,&longCallbackCalled](ccol::event::EventQueue::event_type &&event){
+
+        auto dataEvent = std::dynamic_pointer_cast<SharedLongEvent>(event);
+        if (dataEvent!=nullptr) {
+            EXPECT_EQ(18,*dataEvent->dataRef());
+            EXPECT_EQ(18,*dataEvent->dataCopy());
+            longCallbackCalled = true;
+        } else {
+            queue.stop();
+        }
+    });
+
+    queue.enqueue(std::make_shared<IntEvent>(-10));
+    queue.enqueue(std::make_shared<SharedLongEvent>(std::make_shared<long>(18)));
+    queue.enqueue(std::make_shared<ccol::event::CallbackEvent>([&queue, &callbackCalled]{ callbackCalled = true; queue.stop(); }));
+    EXPECT_FALSE(intCallbackCalled);
+    EXPECT_FALSE(longCallbackCalled);
+    EXPECT_FALSE(callbackCalled);
+    queue.run();
+    EXPECT_TRUE(intCallbackCalled);
+    EXPECT_TRUE(intCallbackCalled);
+    EXPECT_TRUE(callbackCalled);
 }
 
 

@@ -41,6 +41,7 @@
 #include <vector>
 #include <memory>
 #include <typeinfo>
+#include <typeindex>
 
 
 namespace ccol {
@@ -54,13 +55,13 @@ namespace ccol {
             public:
             typedef std::shared_ptr<BaseEvent> event_type;
             typedef std::function<void(event_type&&)> callback_type;
-            typedef std::vector<std::pair<std::type_info,callback_type>> callback_vector_type;
+            typedef std::vector<std::pair<std::type_index,callback_type>> callback_vector_type;
             EventQueue();
             EventQueue(const std::size_t &maxQueueSize);
             bool enqueue(const event_type &event);
             bool enqueue(event_type &&event);
-            void setCallbackForType(const std::type_info &type, const callback_type &callback);
-            void setCallbackForType(const std::type_info &type, callback_type &&callback);
+            void setCallbackForType(const std::type_index &type, const callback_type &callback);
+            void setCallbackForType(const std::type_index &type, callback_type &&callback);
             void setCallbacks(const callback_vector_type &callbacks);
             void setCallbacks(callback_vector_type &&callbacks);
             void run();
