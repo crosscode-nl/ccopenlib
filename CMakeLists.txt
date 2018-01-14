@@ -39,7 +39,11 @@ add_library(ccopenlib ${HEADERS} ${SOURCES})
 target_include_directories(ccopenlib PUBLIC include)
 
 set_property(TARGET ccopenlib PROPERTY PUBLIC_HEADER ${HEADERS})
-set_property(TARGET ccopenlib PROPERTY CXX_STANDARD 14)
+
+set_target_properties(ccopenlib PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED ON
+)
 
 set_target_properties(ccopenlib
       PROPERTIES VERSION ${PROJECT_VERSION}

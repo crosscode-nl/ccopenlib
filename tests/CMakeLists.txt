@@ -20,8 +20,10 @@ add_executable(tests ${HEADERS} ${SOURCES})
 
 target_link_libraries(tests gtest_main ccopenlib)
 
-set_property(TARGET tests PROPERTY CXX_STANDARD 14)
-
+set_target_properties(tests PROPERTIES
+    CXX_STANDARD 14
+    CXX_STANDARD_REQUIRED ON
+)
 set(UNIT_TEST tests)
 
 add_test(NAME ${UNIT_TEST} COMMAND ${UNIT_TEST})
