@@ -56,12 +56,30 @@ TEST(CallbackEventQueue, QueueLimitTest)
     int count = 0;
     EXPECT_TRUE(queue.enqueue([&queue, &count]{
         count++; // 1
-        queue.enqueue([&queue, &count]{ queue.stop(); }); // placed at the back of the queue, causing the EventQueue to stop.
+        queue.enqueue([&queue]{ queue.stop(); }); // placed at the back of the queue, causing the EventQueue to stop.
     }));
     EXPECT_TRUE(queue.enqueue([&queue, &count]{ count++; })); // 2
     EXPECT_TRUE(queue.enqueue([&queue, &count]{ count++; })); // 3
     EXPECT_FALSE(queue.enqueue([&queue, &count]{ count++; })); // 3 this one should not be executed.
+    EXPECT_EQ(0,count);
     queue.run();
     EXPECT_EQ(3,count);
 }
 
+
+TEST(CallbackEventQueue, QueueLimitTestUsingWrap)
+{
+    ccol::event::CallbackEventQueue queue(3);
+    int count = 0;
+    EXPECT_TRUE(queue.enqueue([&queue, &count]{
+        count++; // 1
+        queue.enqueue([&queue]{ queue.stop(); }); // placed at the back of the queue, causing the EventQueue to stop.
+    }));
+    auto wrapped = queue.wrap([&queue, &count]{ count++; });
+    EXPECT_TRUE(wrapped()); // 2
+    EXPECT_TRUE(wrapped()); // 3
+    EXPECT_FALSE(wrapped()); // 3 this one should not be executed.
+    EXPECT_EQ(0,count);
+    queue.run();
+    EXPECT_EQ(3,count);
+}

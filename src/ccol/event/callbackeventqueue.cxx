@@ -41,7 +41,7 @@ namespace ccol {
 
     namespace event {
 
-        void CallbackEventQueue::callback(std::shared_ptr<BaseEvent> &&event)
+        void callback(std::shared_ptr<BaseEvent> &&event)
         {
             auto callbackEvent = std::dynamic_pointer_cast<ccol::event::CallbackEvent>(event);
             if (callbackEvent!=nullptr) {
@@ -51,13 +51,13 @@ namespace ccol {
 
         CallbackEventQueue::CallbackEventQueue()
         {
-            _eventQueue.setCallbackForType(typeid(CallbackEvent),&CallbackEventQueue::callback);
+            _eventQueue.setCallbackForType(typeid(CallbackEvent),&callback);
         }
 
         CallbackEventQueue::CallbackEventQueue(const std::size_t &maxQueueSize)
             : _eventQueue(maxQueueSize)
         {
-            _eventQueue.setCallbackForType(typeid(CallbackEvent),&CallbackEventQueue::callback);
+            _eventQueue.setCallbackForType(typeid(CallbackEvent),&callback);
         }
 
         bool CallbackEventQueue::enqueue(const std::function<void ()> &function)
@@ -83,6 +83,13 @@ namespace ccol {
         void CallbackEventQueue::stop()
         {
             _eventQueue.stop();
+        }
+
+        std::function<bool()> CallbackEventQueue::wrap(const std::function<void()> &function)
+        {
+            return [function,this]{
+                return _eventQueue.enqueue(std::make_shared<CallbackEvent>(function));
+            };
         }
 
         CallbackEventQueue::~CallbackEventQueue()

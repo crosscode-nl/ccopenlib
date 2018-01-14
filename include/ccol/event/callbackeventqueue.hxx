@@ -51,7 +51,6 @@ namespace ccol {
         {
             private:
             EventQueue _eventQueue;
-            static void callback(std::shared_ptr<BaseEvent> &&event);
             public:
             CallbackEventQueue();
             CallbackEventQueue(const std::size_t &maxQueueSize);
@@ -60,6 +59,23 @@ namespace ccol {
             void run();
             bool isRunning();
             void stop();
+
+            /** \brief Wraps the provided job in another lambda function that will execute the job on the provided EventQueue.
+             *
+             * The lambda function provided will be wrapped in the returned lambda function that each time it is
+             * called will add the provided lambda function to the job queue on the provided EventQueue.
+             *
+             * WARNING: The EventQueue must exist when the returned lambda function is invoked, otherwise
+             * undefined behavior (a crash, I hope...) is to be expected.
+             *
+             * The returned lambda could be given to a timer as a callback to create callbacks
+             * that will run on the same thread that the EventQueue is running on.
+             *
+             * \param job A lambda function to be wrapped.
+             * \return The lambda function that will add the job to the EventQueue when executed.
+             */
+            std::function<bool()> wrap(const std::function<void()> &job);
+
             virtual ~CallbackEventQueue();
         };
 
