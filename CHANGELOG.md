@@ -2,8 +2,7 @@
 
 # Future versions
 ## Expected
-- TimerCollection 1.2.0.0
-- EventQueue 1.4.0.0
+- TimerCollection 1.3.0.0
 - Cache 1.4.0.0
 - PriorityEventQueue ?
 - KeyValueStore ?
@@ -12,6 +11,8 @@
 
 ## Added
 - CancellationTokenSource & CancellationToken
+- EventQueue
+- CallbackEventQueue
 
 # Version 1.1.0.0 (2018-01-12)
 
