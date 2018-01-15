@@ -129,5 +129,5 @@ branches:
     only:
     - master
     - develop
-    - /^release/.*$/
+    - /^release.*$/
 

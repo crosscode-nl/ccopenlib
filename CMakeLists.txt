@@ -15,6 +15,7 @@ set(ABIVERSION 1.2.0.0)
 SET(HEADERS
         include/ccol/thread/threadpool.hxx
         include/ccol/thread/timer.hxx
+        include/ccol/thread/timercollection.hxx
         include/ccol/thread/thread_wrap.hxx
         include/ccol/version/version.hxx
         include/ccol/util/always_false.hxx
@@ -30,6 +31,7 @@ SET(HEADERS
 SET(SOURCES
         src/ccol/thread/threadpool.cxx
         src/ccol/thread/timer.cxx
+        src/ccol/thread/timercollection.cxx
         src/ccol/thread/thread_wrap.cxx
         src/ccol/util/cancellationtoken.cxx
         src/ccol/util/cancellationtokensource.cxx
