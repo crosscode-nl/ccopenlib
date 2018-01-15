@@ -102,6 +102,7 @@ matrix:
           sources:
             - llvm-toolchain-trusty-5.0
           packages:
+            - g++-5
             - clang-5.0
             - cmake
       env:
