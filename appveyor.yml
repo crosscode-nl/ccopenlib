@@ -1,0 +1,27 @@
+version: 1.0.{build}
+image:
+- Visual Studio 2017
+- Visual Studio 2015
+install:
+- cmd: git submodule update --init --recursive
+build_script:
+- cmd: >-
+    cd C:\projects\ccopenlib
+
+    mkdir build
+
+    cd build
+
+    cmake .. -Dgtest_force_shared_crt=ON -DCMAKE_BUILD_TYPE=Release
+
+    msbuild ccopenlib.sln /p:Configuration=Release
+test_script:
+- cmd: msbuild RUN_TESTS.vcxproj /p:Configuration=Release
+notifications:
+- provider: Email
+  to:
+  - patrick@crosscode.nl
+  subject: AppVeyor build ccopenlib
+  on_build_success: true
+  on_build_failure: true
+  on_build_status_changed: true
