@@ -125,4 +125,8 @@ script:
     - cmake ..
     - make VERBOSE=1
     - ctest -VV
+branches:
+    only:
+    - master
+    - develop
 
