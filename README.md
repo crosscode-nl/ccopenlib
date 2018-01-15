@@ -1,6 +1,6 @@
 # CCOPENLIB
 
-[![Build Status](https://travis-ci.org/crosscode-nl/ccopenlib.svg?branch=master)](https://travis-ci.org/crosscode-nl/ccopenlib)
+[![Build Status](https://travis-ci.org/crosscode-nl/ccopenlib.svg)](https://travis-ci.org/crosscode-nl/ccopenlib)
 [![Build status](https://ci.appveyor.com/api/projects/status/8o63yettitwfk6ts?svg=true)](https://ci.appveyor.com/project/crosscode-nl/ccopenlib)
 
 ## WHAT IS IT?
