@@ -72,12 +72,38 @@ namespace ccol {
              */
             CallbackEventQueue(const std::size_t &maxQueueSize);
 
-
-
+            /**
+             * \brief Enqueue lambda function on event queue.
+             * \param function The lambda function to execute on the thread where the event queue is running.
+             * \return True when lambda function is queued, false when queue is full.
+             */
             bool enqueue(const std::function<void()> &function);
+
+            /**
+             * \brief Enqueue lambda function on event queue using move semantics.
+             * \param function The lambda function to execute on the thread where the event queue is running.
+             * \return True when lambda function is queued, false when queue is full.
+             */
             bool enqueue(std::function<void()> &&function);
+
+            /**
+             * \brief run starts processing the event queue.
+             *
+             * Starts processing the event queue. This method exits when stop() is called.
+             */
             void run();
+
+            /**
+             * \brief isRunning returns the running state.
+             * \return true when the event queue is running.
+             */
             bool isRunning();
+
+            /**
+             * \brief stop the event queue when it is running.
+             *
+             * The run method will return after this call.
+             */
             void stop();
 
             /** \brief Wraps the provided job in another lambda function that will execute the job on the provided EventQueue.
@@ -96,6 +122,9 @@ namespace ccol {
              */
             std::function<bool()> wrap(const std::function<void()> &job);
 
+            /**
+             * @brief virtual destructor ~CallbackEventQueue
+             */
             virtual ~CallbackEventQueue();
         };
 
