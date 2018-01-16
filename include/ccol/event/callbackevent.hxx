@@ -44,7 +44,7 @@ namespace ccol {
     namespace event {
 
         /**
-         * @brief The CallbackEvent class allows a lambda function to be submitted to the EventQueue.
+         * \brief The CallbackEvent class allows a lambda function to be submitted to the EventQueue.
          * The callback event class allows a lambda function to be posted to an
          * event queue that is than executed on the thread that is
          * processing the event queue.
@@ -55,21 +55,24 @@ namespace ccol {
             std::function<void()> _callback;
             public:
             /**
-             * @brief Constructor CallbackEvent that takes a lambda function.
-             * @param callback The callback to be invoked by the thread processing the EventQueue.
+             * \brief Constructor CallbackEvent that takes a lambda function.
+             * \param callback The callback to be invoked by the thread processing the EventQueue.
              */
             CallbackEvent(const std::function<void()> &callback);
             /**
-             * @brief Constructor CallbackEvent that takes a lambda function using move semantics.
-             * @param callback The callback to be invoked by the thread processing the EventQueue.
+             * \brief Constructor CallbackEvent that takes a lambda function using move semantics.
+             * \param callback The callback to be invoked by the thread processing the EventQueue.
              */
             CallbackEvent(std::function<void()> &&callback);
 
             /**
-             * @brief Invoked the lambda function.
+             * \brief Invoked the lambda function.
              */
             void invoke();
 
+            /**
+             * \brief Virtual destructor ~CallbackEvent
+             */
             virtual ~CallbackEvent();
         };
 

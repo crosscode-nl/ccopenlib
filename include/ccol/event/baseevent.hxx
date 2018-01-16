@@ -41,12 +41,15 @@ namespace ccol {
     namespace event {
 
         /**
-         * @brief The BaseEvent class
+         * \brief The BaseEvent class
          * This is the base class of all events.
          */
         class BaseEvent
         {
         public:
+            /**
+             * \brief Virtual destructor ~BaseEvent
+             */
             virtual ~BaseEvent();
         };
 

@@ -46,20 +46,92 @@
 
 namespace ccol {
     namespace event {
-
+        /**
+         * \brief EventQueue implementation that allows cross-thread event messaging.
+         *
+         * All methods are thread safe.
+         *
+         * All messages will be passed to the event handlers registered with setCallbackForType
+         * or setCallbacks when the event loop is started with run(). To stop the event loop call
+         * stop() from any thread.
+         */
         class EventQueue
         {
-            private:
+
+        private:
             class Impl;
             std::unique_ptr<Impl> _impl;
-            public:
+
+        public:
+            /**
+             * \brief event_type is a share_ptr to the base type of all events.
+             */
             typedef std::shared_ptr<BaseEvent> event_type;
+
+            /**
+             * \brief callback_type is the type of your event handler.
+             */
             typedef std::function<void(event_type&&)> callback_type;
+
+            /**
+             * \brief callback_vector_type is the type of a collection of event handlers.
+             */
             typedef std::vector<std::pair<std::type_index,callback_type>> callback_vector_type;
+
+            /**
+             * \brief The default constructor of the EventQueue.
+             */
             EventQueue();
+
+            /**
+             * \brief Constructor of the EventQueue that allows setting a queue limitation.
+             * \param maxQueueSize The maximum items allowed in the queue.
+             *
+             * When the queue is full, enqueue will return false.
+             */
             EventQueue(const std::size_t &maxQueueSize);
+
+            /**
+             * \brief enqueue an event that is of type event_type.
+             * \param event The event to queue.
+             * \return true when enqueue is succesful, false when queue is full.
+             *
+             * Enqueue an event of type event_type.
+             *
+             * This is a shared_ptr to types inherited from BaseEvent.
+             *
+             * The folling types are already available:
+             *
+             * StaticDataEvent<T>()
+             * SharedDataEvent<T>()
+             * CallbackEvent()
+             *
+             * Use the data events to message data.
+             * Use the callback event to message a callback.
+             */
             bool enqueue(const event_type &event);
+
+            /**
+             * \brief enqueue an event that is of type event_type by using move semantics.
+             * \param event The event to queue.
+             * \return true when enqueue is succesful, false when queue is full.
+             *
+             * Enqueue an event of type event_type.
+             *
+             * This is a shared_ptr to types inherited from BaseEvent.
+             *
+             * The folling types are already available:
+             *
+             * StaticDataEvent<T>()
+             * SharedDataEvent<T>()
+             * CallbackEvent()
+             *
+             * Use the data events to message data.
+             * Use the callback event to message a callback.
+             */
             bool enqueue(event_type &&event);
+
+
             void setCallbackForType(const std::type_index &type, const callback_type &callback);
             void setCallbackForType(const std::type_index &type, callback_type &&callback);
             void setCallbacks(const callback_vector_type &callbacks);

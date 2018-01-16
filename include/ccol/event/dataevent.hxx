@@ -45,7 +45,7 @@ namespace ccol {
     namespace event {
 
         /**
-         * @brief The DataEvent class
+         * \brief The DataEvent class
          *
          * Base class of all DataEvents.
          */
@@ -55,7 +55,7 @@ namespace ccol {
         };
 
         /**
-         * @brief The StaticDataEvent class
+         * \brief The StaticDataEvent class
          *
          * A class template to create classes that descent from DataEvent
          * that contains a static type.
