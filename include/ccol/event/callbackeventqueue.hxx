@@ -47,13 +47,33 @@
 namespace ccol {
     namespace event {
 
+        /**
+         * \brief The CallbackEventQueue class processes callback events by executing them.
+         *
+         * This is a specialized EventQueue that executes lambda functions on the thread
+         * the event queue is running on.
+         */
         class CallbackEventQueue
         {
             private:
             EventQueue _eventQueue;
             public:
+
+            /**
+             * \brief The default constructor of the CallbackEventQueue.
+             */
             CallbackEventQueue();
+
+            /**
+             * \brief Constructor of the CallbackEventQueue that allows setting a queue limitation.
+             * \param maxQueueSize The maximum items allowed in the queue.
+             *
+             * When the queue is full, enqueue will return false.
+             */
             CallbackEventQueue(const std::size_t &maxQueueSize);
+
+
+
             bool enqueue(const std::function<void()> &function);
             bool enqueue(std::function<void()> &&function);
             void run();

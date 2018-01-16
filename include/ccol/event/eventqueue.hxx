@@ -131,14 +131,65 @@ namespace ccol {
              */
             bool enqueue(event_type &&event);
 
-
+            /**
+             * \brief setCallbackForType adds a lambda function as a handler for an event of type type.
+             *
+             *
+             *
+             * \param type The type of the event the callback should handle.
+             * \param callback A lambda function that handles the event.
+             */
             void setCallbackForType(const std::type_index &type, const callback_type &callback);
+
+            /**
+             * \brief setCallbackForType adds a lambda function using move semantics as a handler for an event of type type.
+             *
+             *    typedef ccol::event::StaticDataEvent<int> IntEvent;
+             *    queue.setCallbackForType(typeid(IntEvent),[&queue,&intCallbackCalled](ccol::event::EventQueue::event_type &&event){
+             *       auto dataEvent = std::dynamic_pointer_cast<IntEvent>(event);
+             *       // handle event
+             *    });
+             *
+             * \param type The type of the event the callback should handle.
+             * \param callback A lambda function that handles the event.
+             */
             void setCallbackForType(const std::type_index &type, callback_type &&callback);
+
+            /**
+             * \brief setCallbacks adds callbacks from a vector containing std::pair<std::type_index,callback_type> combinations.
+             * \param The vector containing std::pair<std::type_index,callback_type>
+             */
             void setCallbacks(const callback_vector_type &callbacks);
+
+            /**
+             * \brief setCallbacks adds callbacks from a vector containing std::pair<std::type_index,callback_type> combinations using move semantics.
+             * \param The vector containing std::pair<std::type_index,callback_type>
+             */
             void setCallbacks(callback_vector_type &&callbacks);
+
+            /**
+             * \brief run starts processing the event queue.
+             *
+             * Starts processing the event queue. This method exits when stop() is called.
+             */
             void run();
+
+            /**
+             * \brief isRunning returns the running state.
+             * \return true when the event queue is running.
+             */
             bool isRunning();
+
+            /**
+             * \brief stop the event queue when it is running.
+             *
+             * The run method will return after this call.
+             */
             void stop();
+
+            /**
+             * \brief The virtual destructor ~EventQueue
+             */
             virtual ~EventQueue();
         };
 
