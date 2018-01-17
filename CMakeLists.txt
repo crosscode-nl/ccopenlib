@@ -45,7 +45,7 @@ configure_file(include/ccol/version/version.hxx.in include/ccol/version/version.
 
 add_library(ccopenlib ${HEADERS} ${SOURCES})
 
-target_include_directories(ccopenlib PUBLIC include)
+target_include_directories(ccopenlib PUBLIC ${PROJECT_SOURCE_DIR}/include)
 
 set_property(TARGET ccopenlib PROPERTY PUBLIC_HEADER ${HEADERS})
 
