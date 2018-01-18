@@ -85,7 +85,7 @@ namespace ccol
              *
              * \param threadCreateCallback Callback that allow you to perform operations on the std::thread when it is created.
              */
-            Timer(const std::function<void(std::thread&)> &&threadCreateCallback);
+            Timer(std::function<void(std::thread&)> &&threadCreateCallback);
 
             /** \brief Constructor that accepts a callback by const reference.
              *

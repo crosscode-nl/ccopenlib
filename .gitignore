@@ -1,2 +1,4 @@
 .vs
 /*.user
+/.idea
+/cmake-build-debug

@@ -34,12 +34,8 @@ If you'd like to modify and/or share this code, share it under the same license,
 If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
 #include <ccol/thread/timer.hxx>
-#include <vector>
-#include <thread>
 #include <mutex>
 #include <atomic>
-#include <queue>
-#include <chrono>
 #include <condition_variable>
 #include <iostream>
 #include <algorithm>
@@ -63,7 +59,7 @@ namespace ccol
             bool _changedState = false;
             void threadSpinner();
         public:
-            Impl(const std::function<void (std::thread &)> &threadCreateCallback = nullptr);
+            explicit Impl(const std::function<void (std::thread &)> &threadCreateCallback = nullptr);
             void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
             void setReliability(const unsigned int &reliability);
             void setCallback(const std::function<void()> &callback);
@@ -74,6 +70,7 @@ namespace ccol
         };
 
         Timer::Impl::Impl(const std::function<void (std::thread &)> &threadCreateCallback)
+            : _interval(std::chrono::nanoseconds(0))
         {
             _thread = std::thread(&Timer::Impl::threadSpinner, this);
             if (threadCreateCallback!=nullptr) {
@@ -196,7 +193,7 @@ namespace ccol
 
         }
 
-        Timer::Timer(const std::function<void (std::thread &)> &&threadCreateCallback)
+        Timer::Timer(std::function<void (std::thread &)> &&threadCreateCallback)
             : _impl(std::make_unique<Impl>(std::move(threadCreateCallback)))
         {
 
@@ -249,8 +246,6 @@ namespace ccol
             _impl->stop();
         }
 
-        Timer::~Timer()
-        {
-        }
+        Timer::~Timer() = default;
     }
 }

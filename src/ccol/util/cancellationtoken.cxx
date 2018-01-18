@@ -48,13 +48,10 @@ namespace ccol
 
         bool CancellationToken::isCancelled(const std::memory_order &memoryOrder)
         {
-            if (_cancellationVariable==nullptr) return true;
-            return _cancellationVariable->load(memoryOrder);
+            return _cancellationVariable == nullptr || _cancellationVariable->load(memoryOrder);
         }
 
-        CancellationToken::~CancellationToken()
-        {
-        }
+        CancellationToken::~CancellationToken() = default;
 
     }
 }

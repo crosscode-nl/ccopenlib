@@ -38,7 +38,6 @@ If you have found any errors or improvements you'd like to share, please contact
 #include <condition_variable>
 #include <unordered_map>
 #include <queue>
-#include <typeindex>
 
 namespace ccol {
 
@@ -54,7 +53,7 @@ namespace ccol {
             std::queue<event_type> _events;
             bool _running = false;
             public:
-            Impl(const std::size_t &maxQueueSize);
+            explicit Impl(const std::size_t &maxQueueSize);
             bool enqueue(const event_type &event);
             bool enqueue(event_type &&event);
             void setCallbackForType(const std::type_index &type, const callback_type &callback);
@@ -117,7 +116,7 @@ namespace ccol {
         void EventQueue::Impl::setCallbacks(callback_vector_type &&callbacks)
         {
             std::unique_lock<std::mutex> lock(_stateMutex);
-            for (const auto &typeAndCallback : callbacks) {
+            for (auto &typeAndCallback : callbacks) {
                 _callbacks[typeAndCallback.first] = std::move(typeAndCallback.second);
             }
         }
@@ -132,10 +131,10 @@ namespace ccol {
                  {
                      std::unique_lock<std::mutex> lock(_stateMutex);
                      _stateCv.wait(lock,[this]{
-                        return _events.size()>0 || !_running;
+                        return !_events.empty() || !_running;
                      });
                      if (!_running) break;
-                     if (_events.size()>0) {
+                     if (!_events.empty()) {
                         event = _events.front();
                         _events.pop();
                         auto callbackIterator = _callbacks.find(typeid(*event));

@@ -39,10 +39,7 @@ namespace ccol {
 
 namespace event {
 
-        BaseEvent::~BaseEvent()
-        {
-
-        }
+        BaseEvent::~BaseEvent() = default;
 
     }
 

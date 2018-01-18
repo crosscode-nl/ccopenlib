@@ -35,7 +35,6 @@ If you have found any errors or improvements you'd like to share, please contact
 */
 #include <ccol/event/callbackeventqueue.hxx>
 #include <ccol/event/callbackevent.hxx>
-#include <utility>
 
 namespace ccol {
 

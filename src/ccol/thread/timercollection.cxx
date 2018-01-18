@@ -35,11 +35,9 @@ If you have found any errors or improvements you'd like to share, please contact
 */
 #include <ccol/thread/timercollection.hxx>
 #include <vector>
-#include <thread>
 #include <mutex>
 #include <atomic>
 #include <queue>
-#include <chrono>
 #include <condition_variable>
 #include <iostream>
 #include <algorithm>
@@ -57,23 +55,16 @@ namespace ccol
             ~Impl();
         };
 
-        TimerCollection::Impl::Impl()
-        {
-        }
+        TimerCollection::Impl::Impl() = default;
 
-        TimerCollection::Impl::~Impl()
-        {
-        }
+        TimerCollection::Impl::~Impl() = default;
 
         TimerCollection::TimerCollection()
             : _impl(std::make_unique<Impl>())
         {
         }
 
-        TimerCollection::~TimerCollection()
-        {
-
-        }
+        TimerCollection::~TimerCollection() = default;
 
     }
 }

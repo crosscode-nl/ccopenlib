@@ -59,10 +59,7 @@ namespace ccol {
             }
         }
 
-        CallbackEvent::~CallbackEvent()
-        {
-
-        }
+        CallbackEvent::~CallbackEvent() = default;
 
     }
 

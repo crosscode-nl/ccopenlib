@@ -34,11 +34,8 @@ If you'd like to modify and/or share this code, share it under the same license,
 If you have found any errors or improvements you'd like to share, please contact me: ccopenlib@crosscode.nl
 */
 #include <ccol/thread/threadpool.hxx>
-#include <vector>
-#include <thread>
 #include <mutex>
 #include <atomic>
-#include <queue>
 #include <condition_variable>
 
 namespace ccol
@@ -159,7 +156,7 @@ namespace ccol
         void ThreadPool::Impl::lockedEnqueue(std::vector<std::function<void()>> &&jobs)
         {
             std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
-            for (const auto &job : jobs) {
+            for (auto &job : jobs) {
                 _jobs.push(std::move(job));
             }
         }
@@ -300,8 +297,6 @@ namespace ccol
             };
         }
 
-        ThreadPool::~ThreadPool()
-        {
-        }
+        ThreadPool::~ThreadPool() = default;
     }
 }
