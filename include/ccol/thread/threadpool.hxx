@@ -41,6 +41,7 @@
 #include <queue>
 #include <functional>
 #include <thread>
+#include <chrono>
 
 namespace ccol
 {
@@ -157,6 +158,12 @@ namespace ccol
              */
             void enqueue(std::queue<std::function<void()>> &&jobs);
 
+            /** Returns the the total amount of jobs. (Currently processing + jobs in queue)
+             *
+             *  \return Returns the total amount of jobs.
+             */
+            size_t totalJobCount();
+
             /** Returns the amount of jobs in the queue.
              *
              *  \return The amount of jobs in the queue.
@@ -169,7 +176,7 @@ namespace ccol
              */
             unsigned int threadCount() const;
 
-            /**  Removes all jobs from the queue. */
+            /**  \brief Removes all jobs from the queue. */
             void clear();
 
             /**  \brief Removes all jobs from the queue, and returns them for re-adding them later.
@@ -179,14 +186,17 @@ namespace ccol
              */
             std::queue<std::function<void()>> dequeueAll();
 
-            /** \brief The destructor
-             *
-             *  Destructing the threadpool will lead to the std::thread to be stopped and
-             *  joined. Any job that is still executing will block destruction until it is
-             *  completed. Therefore it is adviced if you add long running jobs, that you
-             *  add some cancelation mechanism.
+            /**
+             * \brief Wait until all jobs are processed.
              */
+            void wait();
 
+            /**
+            * \brief Wait until all jobs are processed or when a timeout is reached.
+            * \param timeout The timeout after when this method should return.
+            * \return True when all jobs are processed, false when timeout has been reached.
+            */
+            bool wait_for(const std::chrono::nanoseconds &timeout);
 
             /** \brief Wraps the provided job in another lambda function that will execute the job on the provided ThreadPool.
              *
@@ -203,6 +213,13 @@ namespace ccol
              */
             std::function<void()> wrap(const std::function<void()> &job);
 
+            /** \brief The destructor
+             *
+             *  Destructing the threadpool will lead to the std::thread to be stopped and
+             *  joined. Any job that is still executing will block destruction until it is
+             *  completed. Therefore it is adviced if you add long running jobs, that you
+             *  add some cancelation mechanism.
+             */
             virtual ~ThreadPool();
         };
     }
