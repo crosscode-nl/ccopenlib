@@ -94,13 +94,13 @@ namespace ccol {
             /**
              * \brief enqueue an event that is of type event_type.
              * \param event The event to queue.
-             * \return true when enqueue is succesful, false when queue is full.
+             * \return true when enqueue is successful, false when queue is full.
              *
              * Enqueue an event of type event_type.
              *
              * This is a shared_ptr to types inherited from BaseEvent.
              *
-             * The folling types are already available:
+             * The following types are already available:
              *
              * StaticDataEvent<T>()
              * SharedDataEvent<T>()
@@ -114,13 +114,13 @@ namespace ccol {
             /**
              * \brief enqueue an event that is of type event_type by using move semantics.
              * \param event The event to queue.
-             * \return true when enqueue is succesful, false when queue is full.
+             * \return true when enqueue is successful, false when queue is full.
              *
              * Enqueue an event of type event_type.
              *
              * This is a shared_ptr to types inherited from BaseEvent.
              *
-             * The folling types are already available:
+             * The following types are already available:
              *
              * StaticDataEvent<T>()
              * SharedDataEvent<T>()

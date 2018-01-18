@@ -67,7 +67,7 @@ namespace ccol
 
             /** \brief Default constructor
              *
-             *  Creates an instance of the threadpool and automatically
+             *  Creates an instance of the thread pool and automatically
              *  allocates an optimal pool of threads. You can check the
              *  amount of thread created by calling the method threadCount()
              */
@@ -75,7 +75,7 @@ namespace ccol
 
             /** \brief Default constructor
              *
-             *  Creates an instance of the threadpool and automatically
+             *  Creates an instance of the thread pool and automatically
              *  allocates an optimal pool of threads. You can check the
              *  amount of thread created by calling the method threadCount()
              *
@@ -85,7 +85,7 @@ namespace ccol
 
             /** \brief Contructor to create an instance of ThreadPool with a certain amount of thread.
              *
-             *  Creates an instance of the threadpool with the specified amount of threads.
+             *  Creates an instance of the thread pool with the specified amount of threads.
              *
              *  Specifying 0 threads will create the optimal amount of threads, just as de default constructor.
              *
@@ -95,7 +95,7 @@ namespace ccol
 
             /** \brief Contructor to create an instance of ThreadPool with a certain amount of thread.
              *
-             *  Creates an instance of the threadpool with the specified amount of threads.
+             *  Creates an instance of the thread pool with the specified amount of threads.
              *
              *  Specifying 0 threads will create the optimal amount of threads, just as de default constructor.
              *
@@ -106,7 +106,7 @@ namespace ccol
 
             /** \brief Enqueue a job by copy.
              *
-             *  Enqueues a job on the threadpool by making a copy of the passed job.
+             *  Enqueues a job on the thread pool by making a copy of the passed job.
              *
              *  \param job The job to be executed.
              */
@@ -114,7 +114,7 @@ namespace ccol
 
             /** \brief Enqueue multiple jobs by copy.
              *
-             *  Enqueues multiple jobs on the threadpool by making a copy of the passed jobs in the vector.
+             *  Enqueues multiple jobs on the thread pool by making a copy of the passed jobs in the vector.
              *
              *  \param jobs A std::vector containing the jobs to be executed.
              */
@@ -122,7 +122,7 @@ namespace ccol
 
             /** \brief Enqueue multiple jobs from queue.
              *
-             *  Enqueues multiple jobs on the threadpool by making a copy of the passed jobs in the queue.
+             *  Enqueues multiple jobs on the thread pool by making a copy of the passed jobs in the queue.
              *
              *  The parameter is passed by copy, since the only way to get items out of a queue is to pop them.
              *
@@ -135,7 +135,7 @@ namespace ccol
 
             /**  \brief Enqueue a job by using move semantics.
              *
-             *  Enqueues a job on the threadpool by using move semantics the job to the queue.
+             *  Enqueues a job on the thread pool by using move semantics the job to the queue.
              *
              *  \param job The job to be executed.
              */
@@ -143,7 +143,7 @@ namespace ccol
 
             /** \brief Enqueue multiple jobs by using move semantics.
              *
-             *  Enqueues multiple jobs on the threadpool by using move semantics the job to the queue.
+             *  Enqueues multiple jobs on the thread pool by using move semantics the job to the queue.
              *
              *  \param jobs A std::vector containing the jobs to be executed.
              */
@@ -151,7 +151,7 @@ namespace ccol
 
             /** \brief Enqueue multiple jobs by using move semantics.
              *
-             *  Enqueues multiple jobs on the threadpool by using move semantics.
+             *  Enqueues multiple jobs on the thread pool by using move semantics.
              *
              *  \param jobs A std::queue containing the jobs to be executed.
              */
@@ -174,29 +174,29 @@ namespace ccol
 
             /**  \brief Removes all jobs from the queue, and returns them for re-adding them later.
              *
-             *  This can be used to 'pause' the processing of jobs on the threadpool.
+             *  This can be used to 'pause' the processing of jobs on the thread pool.
              *  \return A std::queue with the jobs that where pending for execution
              */
             std::queue<std::function<void()>> dequeueAll();
 
             /** \brief The destructor
              *
-             *  Destructing the threadpool will lead to the std::thread to be stopped and
+             *  Destructing the thread pool will lead to the std::thread to be stopped and
              *  joined. Any job that is still executing will block destruction until it is
-             *  completed. Therefore it is adviced if you add long running jobs, that you
-             *  add some cancelation mechanism.
+             *  completed. Therefore it is advised if you add long running jobs, that you
+             *  add some cancellation mechanism.
              */
 
 
             /** \brief Wraps the provided job in another lambda function that will execute the job on the provided ThreadPool.
              *
              * The lambda function provided will be wrapped in the returned lambda function that each time it is
-             * called will add the provided lambda function to the job queue on the provided threadpool.
+             * called will add the provided lambda function to the job queue on the provided thread pool.
              *
-             * WARNING: The threadpool must exist when the returned lambda function is invoked, otherwise
+             * WARNING: The thread pool must exist when the returned lambda function is invoked, otherwise
              * undefined behavior (a crash, I hope...) is to be expected.
              *
-             * The returned lambda could be given to a timer as a callback to create reentrant callbacks.
+             * The returned lambda could be given to a timer as a callback to create re-entrant callbacks.
              *
              * \param job A lambda function to be wrapped.
              * \return The lambda function that will add the job to the job queue when executed.

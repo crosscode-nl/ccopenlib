@@ -55,13 +55,13 @@ ccol::thread::ThreadPool threadpool(2); // create 2 threads on the ThreadPool
 threadpool.threadCount(); // returns 2.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To pause or stop processing you can pull queued jobs from the threadpool.
+To pause or stop processing you can pull queued jobs from the thread pool.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 auto jobs = threadpool.dequeueAll();
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-And to resume the jobs pulled from the threadpool you can enqueue them again.
+And to resume the jobs pulled from the thread pool you can enqueue them again.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 auto jobs = threadpool.dequeueAll();
@@ -113,7 +113,7 @@ timer.start(0ms, 500ms); // fire after 500 milliseconds
 
 Stop a timer.
 
-A timer can be stopped and restarted by using start or startSingleshot everytime. Stop is not required betweeen those calls.
+A timer can be stopped and restarted by using start or startSingleshot every time. Stop is not required between those calls.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 ccol::thread::Timer timer([]{

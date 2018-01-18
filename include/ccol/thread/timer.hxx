@@ -99,15 +99,15 @@ namespace ccol
              */
             Timer(std::function<void()> &&callback);
 
-            /** \brief Sets the reliablity of the timer
+            /** \brief Sets the reliability of the timer
              *
              * Improved the reliability of the timer by staring a busy_loop. Busy loops are expensive. Leave 0 is you can live with some inaccuracy.
              *
-             * \param reliability Reliability parameter is used to determine the (aporximate) time before the expiration to start the busy loop. Use a value between 0 and 1000.
+             * \param reliability Reliability parameter is used to determine the (approximate) time before the expiration to start the busy loop. Use a value between 0 and 1000.
              */
             void setReliability(const unsigned int &reliability);
 
-            /** \brief Start the timer with an interterval after an initial delay.
+            /** \brief Start the timer with an interval after an initial delay.
              *
              *  Use std::chrono::duration to set the initial delay and interval. For example std::chrono::milliseconds(1) or std::chrono::seconds(5)
              *
@@ -118,7 +118,7 @@ namespace ccol
              */
             void start(const std::chrono::nanoseconds& delay, const std::chrono::nanoseconds& interval);
 
-            /** \brief Start the timer with an interterval.
+            /** \brief Start the timer with an interval.
              *
              *  Use std::chrono::duration to set the interval. For example std::chrono::milliseconds(1) or std::chrono::seconds(5)
              *
@@ -157,8 +157,8 @@ namespace ccol
              *
              *  Destructing the timer will lead to the std::thread to be stopped and
              *  joined. Any job that is still executing will block destruction until it is
-             *  completed. Therefore it is adviced if you add long running callbacks, that you
-             *  add some cancelation mechanism.
+             *  completed. Therefore it is advised if you add long running callbacks, that you
+             *  add some cancellation mechanism.
              */
             virtual ~Timer();
         };

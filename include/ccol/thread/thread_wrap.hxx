@@ -42,7 +42,7 @@ namespace ccol {
         /**
          * \brief Wrap provided job lambda function in a lambda function that executes the provided method on a detached thread.
          *
-         * The returned lambda could be given to a timer as a callback to create reentrant callbacks.
+         * The returned lambda could be given to a timer as a callback to create re-entrant callbacks.
          *
          * \param job A lambda function to be wrapped.
          * \return The lambda function that will run the job in a detached thread when executed.
