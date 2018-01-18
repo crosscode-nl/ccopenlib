@@ -157,13 +157,13 @@ namespace ccol {
 
             /**
              * \brief setCallbacks adds callbacks from a vector containing std::pair<std::type_index,callback_type> combinations.
-             * \param The vector containing std::pair<std::type_index,callback_type>
+             * \param callbacks The vector containing std::pair<std::type_index,callback_type>
              */
             void setCallbacks(const callback_vector_type &callbacks);
 
             /**
              * \brief setCallbacks adds callbacks from a vector containing std::pair<std::type_index,callback_type> combinations using move semantics.
-             * \param The vector containing std::pair<std::type_index,callback_type>
+             * \param callbacks The vector containing std::pair<std::type_index,callback_type>
              */
             void setCallbacks(callback_vector_type &&callbacks);
 
