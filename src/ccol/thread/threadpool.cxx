@@ -244,7 +244,6 @@ namespace ccol
             _jobsCv.notify_all(); // multiple jobs are added, wake up all threads.
         }
 
-
         void ThreadPool::Impl::enqueue(std::function<void()> &&job)
         {
             lockedEnqueue(std::move(job));
