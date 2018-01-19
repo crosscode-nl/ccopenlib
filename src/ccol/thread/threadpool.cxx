@@ -49,16 +49,15 @@ namespace ccol
         {
         private:
             unsigned int _threadCount = 0;
-            std::mutex _totalJobsCountMutex;
-            std::condition_variable _totalJobsCountCv;
+            std::condition_variable _totalReducedCountCv;
             size_t _totalJobsCount = 0;
             std::condition_variable _jobsCv;
             std::vector<std::thread> _threads;
             std::queue<std::function<void()>> _jobs;
-            std::mutex _jobsMutex;
+            std::mutex _stateMutex;
             volatile bool _running = true;
             void threadSpinner();
-            inline std::function<void()> threadRetrieveCallback();
+            inline std::function<void()> threadRetrieveCallback(const bool &reduceJobs);
             inline void lockedEnqueue(const std::vector<std::function<void()>> &jobs);
             inline void lockedEnqueue(const std::function<void()> &job);
             inline void lockedEnqueue(std::vector<std::function<void()>> &&jobs);
@@ -83,13 +82,13 @@ namespace ccol
 
         inline void ThreadPool::Impl::clear()
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
             _jobs = std::queue<std::function<void()>>();
         }
 
         inline std::queue<std::function<void()>> ThreadPool::Impl::dequeueAll()
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
             std::queue<std::function<void()>> result = std::move(_jobs);
             _jobs = std::queue<std::function<void()>>(); // create new empty queue/
             return result;
@@ -97,17 +96,17 @@ namespace ccol
 
         void ThreadPool::Impl::wait()
         {
-             std::unique_lock<std::mutex> lock(_totalJobsCountMutex);
-             return _totalJobsCountCv.wait(lock,[this]{
-                 return _totalJobsCount==0;
+             std::unique_lock<std::mutex> lock(_stateMutex);
+             return _totalReducedCountCv.wait(lock,[this]{
+                 return _totalJobsCount==0 || !_running;
              });
         }
 
         bool ThreadPool::Impl::wait_for(const std::chrono::nanoseconds &timeout)
         {
-            std::unique_lock<std::mutex> lock(_totalJobsCountMutex);
-            return _totalJobsCountCv.wait_for(lock,timeout,[this]{
-                return _totalJobsCount==0;
+            std::unique_lock<std::mutex> lock(_stateMutex);
+            return _totalReducedCountCv.wait_for(lock,timeout,[this]{
+                return _totalJobsCount==0 || !_running;
             });
         }
 
@@ -118,13 +117,13 @@ namespace ccol
 
         size_t ThreadPool::Impl::totalJobCount()
         {
-             std::unique_lock<std::mutex> lock( _totalJobsCountMutex);
+             std::unique_lock<std::mutex> lock( _stateMutex);
              return _totalJobsCount;
         }
 
         size_t ThreadPool::Impl::queueCount()
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
             return _jobs.size();
         }
 
@@ -148,39 +147,40 @@ namespace ccol
             }
         }
 
-        std::function<void()> ThreadPool::Impl::threadRetrieveCallback()
+        std::function<void()> ThreadPool::Impl::threadRetrieveCallback(const bool &reduceJobs)
         {
             std::function<void()> callback = nullptr;
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
-            _jobsCv.wait(jobsMutexLock, [this]() { return !_jobs.empty() || !_running; });
-            if (!_running) return nullptr;
-            callback = std::move(_jobs.front());
-            _jobs.pop();
+            {
+                std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+                if (reduceJobs) {
+                    _totalJobsCount--;
+                    _totalReducedCountCv.notify_all();
+                }
+                _jobsCv.wait(jobsMutexLock, [this]() { return !_jobs.empty() || !_running; });
+                if (!_running) return nullptr;
+                callback = std::move(_jobs.front());
+                _jobs.pop();
+            }
             return callback;
         }
 
         void ThreadPool::Impl::threadSpinner()
         {
+            bool reduceJobs = false;
             while (_running) {
-                std::function<void()> callback(threadRetrieveCallback());
+                std::function<void()> callback(threadRetrieveCallback(reduceJobs));
+                reduceJobs = false;
                 if (_running && callback != nullptr) {
                     callback();
-                    {
-                        std::unique_lock<std::mutex> lock( _totalJobsCountMutex );
-                        _totalJobsCount--;
-                    }
-                    _totalJobsCountCv.notify_all();
+                    reduceJobs = true;
                 }
             }
         }
 
         void ThreadPool::Impl::lockedEnqueue(const std::vector<std::function<void()>> &jobs)
         {
-            {
-                std::unique_lock<std::mutex> lock( _totalJobsCountMutex );
-                _totalJobsCount+= jobs.size();
-            }
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount += jobs.size();
             for (const auto &job : jobs) {
                 _jobs.push(job);
             }
@@ -189,21 +189,15 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(const std::function<void()> &job)
         {
-            {
-                std::unique_lock<std::mutex> lock( _totalJobsCountMutex );
-                _totalJobsCount++;
-            }
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount++;
             _jobs.push(job);
         }
 
         void ThreadPool::Impl::lockedEnqueue(std::vector<std::function<void()>> &&jobs)
         {
-            {
-                std::unique_lock<std::mutex> lock( _totalJobsCountMutex );
-                _totalJobsCount+= jobs.size();
-            }
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount += jobs.size();
             for (const auto &job : jobs) {
                 _jobs.push(std::move(job));
             }
@@ -211,11 +205,8 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(std::queue<std::function<void()>> &&jobs)
         {
-            {
-                std::unique_lock<std::mutex> lock( _totalJobsCountMutex );
-                _totalJobsCount+= jobs.size();
-            }
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount += jobs.size();
             while (!jobs.empty()) {
                 _jobs.push(std::move(jobs.front()));
                 jobs.pop();
@@ -224,11 +215,8 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(std::function<void()> &&job)
         {
-            {
-                std::unique_lock<std::mutex> lock( _totalJobsCountMutex );
-                _totalJobsCount++;
-            }
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount++;
             _jobs.push(std::move(job));
         }
 
@@ -266,7 +254,7 @@ namespace ccol
         {
             _running = false;
             { // scope to release the lock.
-                std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex); // acquire lock, otherwise not all threads are waiting...
+                std::unique_lock<std::mutex> jobsMutexLock( _stateMutex); // acquire lock, otherwise not all threads are waiting...
                 _jobsCv.notify_all();
             }
 
