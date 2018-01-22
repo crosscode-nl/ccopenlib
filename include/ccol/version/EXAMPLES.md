@@ -2,7 +2,7 @@
 
 Version methods are pretty self explanatory.
 
-Include header: 
+Include header:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.cpp}
 #include <ccol/version/version.hxx>
