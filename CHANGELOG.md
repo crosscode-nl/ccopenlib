@@ -7,6 +7,12 @@
 - PriorityEventQueue ?
 - KeyValueStore ?
 
+## Version 1.2.1.0 (2018-03-06)
+
+## Fixed
+
+- Added documentation to event namespace.
+
 ## Version 1.2.0.0 (2018-03-06)
 
 ## Added
