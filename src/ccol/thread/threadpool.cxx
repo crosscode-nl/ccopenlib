@@ -46,13 +46,15 @@ namespace ccol
         {
         private:
             unsigned int _threadCount = 0;
+            std::condition_variable _totalReducedCountCv;
+            size_t _totalJobsCount = 0;
+            std::condition_variable _jobsCv;
             std::vector<std::thread> _threads;
-            std::condition_variable _threadUnlocked;
             std::queue<std::function<void()>> _jobs;
-            std::mutex _jobsMutex;
+            std::mutex _stateMutex;
             volatile bool _running = true;
             void threadSpinner();
-            inline std::function<void()> threadRetrieveCallback();
+            inline std::function<void()> threadRetrieveCallback(const bool &reduceJobs);
             inline void lockedEnqueue(const std::vector<std::function<void()>> &jobs);
             inline void lockedEnqueue(const std::function<void()> &job);
             inline void lockedEnqueue(std::vector<std::function<void()>> &&jobs);
@@ -66,24 +68,43 @@ namespace ccol
             inline void enqueue(std::vector<std::function<void()>> &&jobs);
             inline void enqueue(std::queue<std::function<void()>> &&jobs);
             inline size_t queueCount();
+            inline size_t totalJobCount();
             inline unsigned int threadCount() const;
             inline void clear();
             inline std::queue<std::function<void()>> dequeueAll();
+            void wait();
+            bool wait_for(const std::chrono::nanoseconds &timeout);
             ~Impl();
         };
 
         inline void ThreadPool::Impl::clear()
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
             _jobs = std::queue<std::function<void()>>();
         }
 
         inline std::queue<std::function<void()>> ThreadPool::Impl::dequeueAll()
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
             std::queue<std::function<void()>> result = std::move(_jobs);
             _jobs = std::queue<std::function<void()>>(); // create new empty queue/
             return result;
+        }
+
+        void ThreadPool::Impl::wait()
+        {
+             std::unique_lock<std::mutex> lock(_stateMutex);
+             return _totalReducedCountCv.wait(lock,[this]{
+                 return _totalJobsCount==0 || !_running;
+             });
+        }
+
+        bool ThreadPool::Impl::wait_for(const std::chrono::nanoseconds &timeout)
+        {
+            std::unique_lock<std::mutex> lock(_stateMutex);
+            return _totalReducedCountCv.wait_for(lock,timeout,[this]{
+                return _totalJobsCount==0 || !_running;
+            });
         }
 
         unsigned int ThreadPool::Impl::threadCount() const
@@ -91,9 +112,15 @@ namespace ccol
             return _threadCount;
         }
 
+        size_t ThreadPool::Impl::totalJobCount()
+        {
+             std::unique_lock<std::mutex> lock( _stateMutex);
+             return _totalJobsCount;
+        }
+
         size_t ThreadPool::Impl::queueCount()
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
             return _jobs.size();
         }
 
@@ -117,30 +144,40 @@ namespace ccol
             }
         }
 
-        std::function<void()> ThreadPool::Impl::threadRetrieveCallback()
+        std::function<void()> ThreadPool::Impl::threadRetrieveCallback(const bool &reduceJobs)
         {
             std::function<void()> callback = nullptr;
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
-            _threadUnlocked.wait(jobsMutexLock, [this]() { return !_jobs.empty() || !_running; });
-            if (!_running) return nullptr;
-            callback = std::move(_jobs.front());
-            _jobs.pop();
+            {
+                std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+                if (reduceJobs) {
+                    _totalJobsCount--;
+                    _totalReducedCountCv.notify_all();
+                }
+                _jobsCv.wait(jobsMutexLock, [this]() { return !_jobs.empty() || !_running; });
+                if (!_running) return nullptr;
+                callback = std::move(_jobs.front());
+                _jobs.pop();
+            }
             return callback;
         }
 
         void ThreadPool::Impl::threadSpinner()
         {
+            bool reduceJobs = false;
             while (_running) {
-                std::function<void()> callback(threadRetrieveCallback());
+                std::function<void()> callback(threadRetrieveCallback(reduceJobs));
+                reduceJobs = false;
                 if (_running && callback != nullptr) {
                     callback();
+                    reduceJobs = true;
                 }
             }
         }
 
         void ThreadPool::Impl::lockedEnqueue(const std::vector<std::function<void()>> &jobs)
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount += jobs.size();
             for (const auto &job : jobs) {
                 _jobs.push(job);
             }
@@ -149,21 +186,24 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(const std::function<void()> &job)
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount++;
             _jobs.push(job);
         }
 
         void ThreadPool::Impl::lockedEnqueue(std::vector<std::function<void()>> &&jobs)
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
-            for (auto &job : jobs) {
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount += jobs.size();
+            for (const auto &job : jobs) {
                 _jobs.push(std::move(job));
             }
         }
 
         void ThreadPool::Impl::lockedEnqueue(std::queue<std::function<void()>> &&jobs)
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount += jobs.size();
             while (!jobs.empty()) {
                 _jobs.push(std::move(jobs.front()));
                 jobs.pop();
@@ -172,47 +212,47 @@ namespace ccol
 
         void ThreadPool::Impl::lockedEnqueue(std::function<void()> &&job)
         {
-            std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex );
+            std::unique_lock<std::mutex> jobsMutexLock( _stateMutex );
+            _totalJobsCount++;
             _jobs.push(std::move(job));
         }
 
         void ThreadPool::Impl::enqueue(const std::function<void()> &job)
         {
             lockedEnqueue(job);
-            _threadUnlocked.notify_one(); // since one job is added, wake up one extra threads.
+            _jobsCv.notify_one(); // since one job is added, wake up one extra threads.
         }
 
         void ThreadPool::Impl::enqueue(const std::vector<std::function<void()>> &jobs)
         {
             lockedEnqueue(jobs);
-            _threadUnlocked.notify_all(); // multiple jobs are added, wake up all threads.
+            _jobsCv.notify_all(); // multiple jobs are added, wake up all threads.
         }
-
 
         void ThreadPool::Impl::enqueue(std::function<void()> &&job)
         {
             lockedEnqueue(std::move(job));
-            _threadUnlocked.notify_one(); // since one job is added, wake up one extra threads.
+            _jobsCv.notify_one(); // since one job is added, wake up one extra threads.
         }
 
         void ThreadPool::Impl::enqueue(std::vector<std::function<void()>> &&jobs)
         {
             lockedEnqueue(std::move(jobs));
-            _threadUnlocked.notify_all(); // multiple jobs are added, wake up all threads.
+            _jobsCv.notify_all(); // multiple jobs are added, wake up all threads.
         }
 
         void ThreadPool::Impl::enqueue(std::queue<std::function<void()>> &&jobs)
         {
             lockedEnqueue(std::move(jobs));
-            _threadUnlocked.notify_all(); // multiple jobs are added, wake up all threads.
+            _jobsCv.notify_all(); // multiple jobs are added, wake up all threads.
         }
 
         ThreadPool::Impl::~Impl()
         {
             _running = false;
             { // scope to release the lock.
-                std::unique_lock<std::mutex> jobsMutexLock( _jobsMutex); // acquire lock, otherwise not all threads are waiting...
-                _threadUnlocked.notify_all();
+                std::unique_lock<std::mutex> jobsMutexLock( _stateMutex); // acquire lock, otherwise not all threads are waiting...
+                _jobsCv.notify_all();
             }
 
             for (std::thread &thread : _threads) {
@@ -265,6 +305,11 @@ namespace ccol
             _impl->enqueue(std::move(jobs));
         }
 
+        size_t ThreadPool::totalJobCount()
+        {
+            return _impl->totalJobCount();
+        }
+
         void ThreadPool::enqueue(std::queue<std::function<void()>> &&jobs)
         {
             _impl->enqueue(std::move(jobs));
@@ -288,6 +333,16 @@ namespace ccol
         std::queue<std::function<void()>> ThreadPool::dequeueAll()
         {
             return _impl->dequeueAll();
+        }
+
+        void ThreadPool::wait()
+        {
+            _impl->wait();
+        }
+
+        bool ThreadPool::wait_for(const std::chrono::nanoseconds &timeout)
+        {
+             return _impl->wait_for(timeout);
         }
 
         std::function<void ()> ThreadPool::wrap(const std::function<void ()> &job)

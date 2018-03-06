@@ -241,5 +241,73 @@ TEST(ThreadPool, ExecutedTwoOfFourEmittedByWrapper)
     EXPECT_EQ(2,tptc.middleCount);
 }
 
+TEST(ThreadPool, WaitReturns)
+{
+    ccol::thread::ThreadPool threadpool(2);
+    threadpool.wait();
+    EXPECT_EQ(0,threadpool.totalJobCount());
+}
+
+TEST(ThreadPool, WaitReturnsAfterJobsHaveBeenProcessed)
+{
+    using namespace std::literals::chrono_literals;
+
+    ccol::thread::ThreadPool threadpool(2);
+    std::mutex lock;
+    lock.lock();
+    for (int counter=0; counter<4; counter++) {
+        threadpool.enqueue([&lock]{
+            lock.lock();
+            lock.unlock();
+            std::this_thread::sleep_for(1ms);
+        });
+        EXPECT_EQ(counter+1,threadpool.totalJobCount());
+    }
+    lock.unlock();
+    threadpool.wait();
+    EXPECT_EQ(0,threadpool.totalJobCount());
+}
+
+TEST(ThreadPool, WaitForReturnsAfterJobsHaveBeenProcessed)
+{
+    using namespace std::literals::chrono_literals;
+
+    ccol::thread::ThreadPool threadpool(2);
+    std::mutex lock;
+    lock.lock();
+    for (int counter=0; counter<4; counter++) {
+        threadpool.enqueue([&lock]{
+            lock.lock();
+            lock.unlock();
+            std::this_thread::sleep_for(1ms);
+        });
+        EXPECT_EQ(counter+1,threadpool.totalJobCount());
+    }
+    lock.unlock();
+    EXPECT_TRUE(threadpool.wait_for(100ms));
+    EXPECT_EQ(0,threadpool.totalJobCount());
+}
+
+TEST(ThreadPool, WaitForReturnsBeforeJobsHaveBeenProcessed)
+{
+    using namespace std::literals::chrono_literals;
+
+    ccol::thread::ThreadPool threadpool(2);
+    std::mutex lock;
+    lock.lock();
+    for (int counter=0; counter<4; counter++) {
+        threadpool.enqueue([&lock]{
+            lock.lock();
+            lock.unlock();
+            std::this_thread::sleep_for(100ms);
+        });
+        EXPECT_EQ(counter+1,threadpool.totalJobCount());
+    }
+    lock.unlock();
+    EXPECT_FALSE(threadpool.wait_for(50ms));
+    EXPECT_NE(0,threadpool.totalJobCount());
+}
+
+
 
 }

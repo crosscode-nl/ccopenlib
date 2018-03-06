@@ -38,6 +38,9 @@
 
 namespace ccol {
 
+    /**
+     * \brief The event namespace contains functions and classes related to eventing.
+     */
     namespace event {
 
         /**

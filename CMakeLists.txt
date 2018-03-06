@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.9.0)
 project (
     CCOPENLIB
-    VERSION 1.2.0.0
+    VERSION 1.2.1.0
     DESCRIPTION "CCOPENLIB is a free open source library for C++14 that provides commonly needed patterns."
     LANGUAGES CXX
 )
@@ -9,7 +9,12 @@ project (
 include(CTest)
 enable_testing()
 
-set(BUILD_QUALITY "Alpha")
+#set(BUILD_QUALITY "Alpha")
+#set(BUILD_QUALITY "Beta")
+set(BUILD_QUALITY "Release")
+#set(BUILD_QUALITY "Release candidate")
+
+# Change ABI version when ABI of existing classes has been changed.
 set(ABIVERSION 1.2.0.0)
 
 SET(HEADERS
