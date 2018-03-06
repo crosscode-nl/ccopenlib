@@ -1,8 +1,8 @@
 # Changelog
 
-# Future versions
+## Future versions
 
-## Expected
+### Expected
 
 - TimerCollection 1.3.0.0
 - Cache 1.4.0.0
@@ -11,78 +11,78 @@
 
 ## Version 1.3.0.0 (2018-)
 
-## Added
+### Added
 
 - Added documentation to util namespace.
 
 ## Version 1.2.1.0 (2018-03-06)
 
-## Fixed
+### Fixed
 
 - Added documentation to event namespace.
 
 ## Version 1.2.0.0 (2018-03-06)
 
-## Added
+### Added
 
 - CancellationTokenSource & CancellationToken
 - EventQueue
 - CallbackEventQueue
 
-# Version 1.1.0.0 (2018-01-12)
+## Version 1.1.0.0 (2018-01-12)
 
-## Added
+### Added
 
 - Updated and added documentation
 - Added constructor to Timer to allow std::thread access.
 
-## Fixed
+### Fixed
 
 - Updated Alpha to Release.
 
 # Version 1.0.0.0 (2018-01-10)
 
-## Added
+### Added
 
 - CHANGELOG.md added to documentation
 - LICENSE.md added to documentation
 - Unit tests for Timer
 
-## Fixed
+### Fixed
 
 - Bug in ThreadPool unit test
 
-# Version 0.2.0.0 (2018-01-08)
+## Version 0.2.0.0 (2018-01-08)
 
-## Added
+### Added
 
 - Modified threadpool semantics
 - Created thread_wrap
 - Added documentation
 - Finished and tested threadpool
 
-## Fixed
+### Fixed
 
 - Compile errors
 
-# Version 0.1.0.0 (2018-01-06)
+## Version 0.1.0.0 (2018-01-06)
 
-## Added
+### Added
 
 - Timer
 - Doxygen documentation
 - Logo assets
 
-## Fixed
+### Fixed
 
 - Bugs in ThreadPool
 - Chosen a license (MIT) more suitable to software.
 - Better project structure
 
 
-# Version 0.0.0.0 (2017-12-16)
+## Version 0.0.0.0 (2017-12-16)
 
-## Added
+### Added
 
 - Initial ThreadPool development.
 - Initial License (Creative Commons)
