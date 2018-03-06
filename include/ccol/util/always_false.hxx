@@ -40,6 +40,10 @@
 #include <type_traits>
 
 namespace ccol {
+
+    /**
+    * \brief The util namespace is used for util functions and classes.
+    */
     namespace util {
 
         /**

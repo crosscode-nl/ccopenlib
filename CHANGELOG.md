@@ -1,11 +1,19 @@
 # Changelog
 
 # Future versions
+
 ## Expected
+
 - TimerCollection 1.3.0.0
 - Cache 1.4.0.0
 - PriorityEventQueue ?
 - KeyValueStore ?
+
+## Version 1.3.0.0 (2018-)
+
+## Added
+
+- Added documentation to util namespace.
 
 ## Version 1.2.1.0 (2018-03-06)
 
