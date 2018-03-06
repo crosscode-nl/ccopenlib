@@ -69,8 +69,8 @@ queue.setCallbacks(
 });
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To limit the queue pass the maximum queue items to the constructor. 
-When the queue is full enqueue() will return false. 
+To limit the queue pass the maximum queue items to the constructor.
+When the queue is full enqueue() will return false.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
 // Thread A
@@ -136,30 +136,30 @@ Include header:
 #include <ccol/event/callbackeventqueue.hxx>
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Create an instance of the CallbackEventQueue. 
+Create an instance of the CallbackEventQueue.
 Use enqueue to schedule a lambda method to the queue.
 Run queue by calling run. The queue will now loop until
-stop is called. Stop muse be called from another thread or 
+stop is called. Stop muse be called from another thread or
 scheduled as an event before calling run(). A lambda method
-the calls stop can also be scheduled from another thread. 
+the calls stop can also be scheduled from another thread.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
     ccol::event::CallbackEventQueue queue;
     queue.enqueue([&queue]{
         // Do some work.
-        queue.stop(); // Call queue stop if you want to stop the queue. 
+        queue.stop(); // Call queue stop if you want to stop the queue.
     });
-    queue.run(); // Will loop until stop is called. 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+    queue.run(); // Will loop until stop is called.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To limit the queue pass the maximum queue items to the constructor. 
-When the queue is full enqueue() will return false. 
+To limit the queue pass the maximum queue items to the constructor.
+When the queue is full enqueue() will return false.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~cpp
-ccol::event::CallbackEventQueue queue(3);  
+ccol::event::CallbackEventQueue queue(3);
 bool result = queue.enqueue([&queue]{
                 // Do some work.
-                queue.stop(); // Call queue stop if you want to stop the queue. 
+                queue.stop(); // Call queue stop if you want to stop the queue.
               });
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -169,18 +169,18 @@ To wrap a lambda method to always run on the queue use wrap().
     ccol::event::CallbackEventQueue queue;
     int count = 0;
     auto wrapped = queue.wrap([&queue, &count]{ count++; });
-    wrapped(); 
-    wrapped(); 
-    wrapped(); 
+    wrapped();
+    wrapped();
+    wrapped();
     EXPECT_TRUE(queue.enqueue([&queue, &count]{
         count++;
         queue.enqueue([&queue]{ queue.stop(); }); // placed at the back of the queue, causing the EventQueue to stop.
     }));
     queue.run();
-    // count will be 4. 
+    // count will be 4.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-# CallbackEvent
+## CallbackEvent
 
 Include header:
 
