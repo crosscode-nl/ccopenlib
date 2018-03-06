@@ -9,7 +9,11 @@ project (
 include(CTest)
 enable_testing()
 
-set(BUILD_QUALITY "Alpha")
+#set(BUILD_QUALITY "Alpha")
+#set(BUILD_QUALITY "Beta")
+#set(BUILD_QUALITY "Release")
+set(BUILD_QUALITY "Release candidate")
+
 set(ABIVERSION 1.2.0.0)
 
 SET(HEADERS

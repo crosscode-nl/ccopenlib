@@ -221,5 +221,3 @@ TEST(Timer, IntervalStopRestart)
 
     EXPECT_EQ(4,t.count.load());
 }
-
-
