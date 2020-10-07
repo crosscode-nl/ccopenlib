@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/crosscode-nl/ccopenlib.svg)](https://travis-ci.org/crosscode-nl/ccopenlib)
 [![Build status](https://ci.appveyor.com/api/projects/status/8o63yettitwfk6ts?svg=true)](https://ci.appveyor.com/project/crosscode-nl/ccopenlib)
+[![Language grade: C/C++](https://img.shields.io/lgtm/grade/cpp/g/crosscode-nl/ccopenlib.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/crosscode-nl/ccopenlib/context:cpp)
 
 ## WHAT IS IT?
 
